@@ -3,8 +3,6 @@ import os
 
 SNAKEMAKE_DIR = os.path.dirname(workflow.snakefile)
 
-configfile : "nanopolish.json"
-
 REFERENCE = config['REFERENCE']
 MANIFEST = config['MANIFEST']
 REGIONS = config['REGIONS']
@@ -27,14 +25,14 @@ def find_fast5_dir(wildcards):
 	df = pd.read_csv(manifest_df.at[wildcards.sample, 'FAST5_FOFN'], sep='\t', header=None, names=['files'])
 	return '-d '+' -d '.join(df['files'].values())
 
-def findBam(wildcards):
+def find_bam(wildcards):
 	return manifest_df.at[wildcards.sample, 'BAM']
 
-def findHapOne(wildcards):
-	return manifest_df.at[wildcards.sample, 'HAP_ONE']
+# def findHapOne(wildcards):
+# 	return manifest_df.at[wildcards.sample, 'HAP_ONE']
 
-def findHapTwo(wildcards):
-	return manifest_df.at[wildcards.sample, 'HAP_TWO']
+# def findHapTwo(wildcards):
+# 	return manifest_df.at[wildcards.sample, 'HAP_TWO']
 
 
 def find_summary_fofn(wildcards):
@@ -53,16 +51,39 @@ rule pre_process:
 	input:
 		fastq = find_fastq
 	output:
-		flag = temp(touch('{sample}.prep'))
+		flag = temp('tmp/reads/{sample}.fastq.gz')
 	params:
 		directory = find_fast5_dir,
 		summary = find_summary_fofn
 	envmodules:
-		'nanopolish/0.13.3'
+        'modules',
+        'modules-init',
+        'modules-gs/prod',
+        'modules-eichler/prod',
+		'nanopolish/0.13.2'
 	shell:
 		'''
-		nanopolish index {params.directory} {params.summary} {input.fastq}
+		cat {input.fastq} > {output.fastq}
+		nanopolish index {params.directory} {params.summary} {output.fastq}
 		'''	
+
+rule nanopolish:
+	input:
+		fastq = rules.pre_process.output.fastq,
+		sorted_bam = find_bam,
+		reference = REFERENCE,
+		flag = '{sample}.prep'
+	output:
+		methyl = 'calls/{sample}/{window}.methylation.tsv'
+	params:
+		sge_opts = '-l mfree=4G -pe serial 8',
+	priority:20
+	shell:
+		'''
+		module load htslib/latest gcc/latest nanopolish/0.11.1
+		nanopolish call-methylation -t 8 -r {input.fastq} -b {input.sorted_bam} -g {REFERENCE} -w {wildcards.window} > {output.methyl}
+		'''
+
 
 
 
@@ -225,22 +246,6 @@ rule resolve_haplotypes:
 
 
 
-rule nanopolish:
-	input:
-		fastq = findFastq,
-		sorted_bam = findBam,
-		reference = REFERENCE,
-		flag = '{sample}.prep'
-	output:
-		methyl = 'calls/{sample}/{window}.methylation.tsv'
-	params:
-		sge_opts = '-l mfree=4G -pe serial 8',
-	priority:20
-	shell:
-		'''
-		module load htslib/latest gcc/latest nanopolish/0.11.1
-		nanopolish call-methylation -t 8 -r {input.fastq} -b {input.sorted_bam} -g {REFERENCE} -w {wildcards.window} > {output.methyl}
-		'''
 
 # rule map_sort:
 # 	input: 

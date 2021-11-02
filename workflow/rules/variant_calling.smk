@@ -3,85 +3,114 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 
-import pdb;
-tr=pdb.set_trace
-
-SNAKEMAKE_DIR = os.path.dirname(workflow.snakefile)
-shell.prefix("source %s/env.cfg; " % SNAKEMAKE_DIR)
-configfile: "svcalling.snake_config.yaml"
-
-CLAIR_DIR = config['clair_dir']
-
-
-MANIFEST = pd.read_csv(config['manifest'], sep='\t')
-
-
-
-def find_input_file(wildcards):
-	return MANIFEST.loc[(MANIFEST['SAMPLE'] == wildcards.sample) & (MANIFEST['ALN_TYPE'] == wildcards.aln_type), 'BAM'].values[0]
-
-
-localrules: all, clair
-
-
-rule all:
-	input:
-		# expand('svcalling/clair/{sample}_{aln_type}/run_clair3.log', zip, aln_type=MANIFEST['ALN_TYPE'].values, sample=MANIFEST['SAMPLE'].values),
-		expand('svcalling/sniffles/{sample}_{aln_type}_sniffles.vcf', zip, aln_type=MANIFEST['ALN_TYPE'].values, sample=MANIFEST['SAMPLE'].values),
-		expand('svcalling/cuteSV/{sample}_{aln_type}_cuteSV.vcf', zip, aln_type=MANIFEST['ALN_TYPE'].values, sample=MANIFEST['SAMPLE'].values)
-
-
 
 rule clair:
 	input:
-		merged_bam = find_input_file,
-		ref = config['ref_hg38']
+		merged_bam = rules.merge_run_aln.output.merged_bam,
+		index = rules.index_aln.output.merged_bai,
+		ref = REF
 	output:
-		clair_vcf = 'svcalling/clair/{sample}_{aln_type}/run_clair3.log'
-	params:
-		out_dir = 'svcalling/clair/{sample}_{aln_type}/'
+		vcf = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.clair3.vcf'
+	envmodules:
+		'modules',
+		'modules-init',
+		'modules-gs/prod',
+		'modules-eichler/prod',
 	resources:
 		mem=10,
 		hrs=24
 	threads: 1 
 	shell:
 		"""
-		{CLAIR_DIR}/clair3.sh -s {wildcards.sample} -r {input.ref} -b {input.merged_bam} -o {params.out_dir}
+		{CLAIR_DIR}/clair3.sh -s {wildcards.sample} -r {input.ref} -b {input.merged_bam} -o $( dirname {output.vcf} )
 		"""
 
 
 rule sniffles:
 	input:
-		merged_bam = find_input_file,
-		ref = config['ref_hg38']
+		merged_bam = rules.merge_run_aln.output.merged_bam,
+		index = rules.index_aln.output.merged_bai,
+		ref = REF
 	output:
-		sniffles_vcf = 'svcalling/sniffles/{sample}_{aln_type}_sniffles.vcf'
+		vcf = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.clair3.vcf'
+	envmodules:
+		'modules',
+		'modules-init',
+		'modules-gs/prod',
+		'modules-eichler/prod',
+		'sniffles/202109'
 	resources:
 		mem=10,
 		hrs=24
 	threads: 1 
 	shell:
 		"""
-		sniffles -m {input.merged_bam} -v {output.sniffles_vcf}
+		sniffles -m {input.merged_bam} -v {output.vcf}
 		"""
 
 
 rule cuteSV:
 	input:
-		merged_bam = find_input_file,
-		ref = config['ref_hg38']
+		merged_bam = rules.merge_run_aln.output.merged_bam,
+		index = rules.index_aln.output.merged_bai,
+		ref = REF
 	output:
-		cuteSV_vcf = 'svcalling/cuteSV/{sample}_{aln_type}_cuteSV.vcf'
-	params:
-		wd = 'svcalling/cuteSV/{sample}_{aln_type}/'
+		cuteSV_vcf = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.clair3.vcf'
+	envmodules:
+		'modules',
+		'modules-init',
+		'modules-gs/prod',
+		'modules-eichler/prod',
+		'cuteSV/1.0.11'
 	resources:
 		mem=10,
 		hrs=24
-	threads: 1 
+	threads: 8
 	shell:
 		"""
-		mkdir {params.wd}
-
-		cuteSV {input.merged_bam} {input.ref} {output.cuteSV_vcf} {params.wd} --genotype --max_cluster_bias_INS 100 --diff_ratio_merging_INS 0.3 --max_cluster_bias_DEL 100 --diff_ratio_merging_DEL 0.3
+		cuteSV -t {threads} --genotype --max_cluster_bias_INS 100 --diff_ratio_merging_INS 0.3 --max_cluster_bias_DEL 100 --diff_ratio_merging_DEL 0.3 {input.merged_bam} {input.ref} {output.cuteSV_vcf} $( dirname {cuteSV_vcf} )
 		"""
 
+rule svim:
+	input:
+		merged_bam = rules.merge_run_aln.output.merged_bam,
+		index = rules.index_aln.output.merged_bai,
+		ref = REF
+	output:
+		vcf = temp('alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.svim.vcf')
+	envmodules:
+		'modules',
+		'modules-init',
+		'modules-gs/prod',
+		'modules-eichler/prod',
+		'svim/1.4.2'
+	resources:
+		mem=16,
+		hrs=24
+	threads: 1
+	shell:
+		"""
+		svim --sample {wildcard.sample} $( dirname {cuteSV_vcf} ) {input.merged_bam} {input.ref}
+		"""
+
+
+rule bgzip_vcf:
+	input:
+		vcf = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.{var_caller}.vcf'
+	output:
+		zipped = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.{var_caller}.vcf'
+	envmodules:
+		'modules',
+		'modules-init',
+		'modules-gs/prod',
+		'modules-eichler/prod',
+		'tabix/0.2.6'
+	resources:
+		mem=10,
+		hrs=24
+	threads: 1
+	shell:
+		'''
+		bgzip -c {input.vcf} > {output.zipped}
+		tabix {output.zipped}
+		'''	
