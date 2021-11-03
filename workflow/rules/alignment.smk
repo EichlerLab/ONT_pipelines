@@ -14,7 +14,7 @@ def find_input_file(wildcards):
 
 def find_parts(wildcards):
 	fofn_df = pd.read_csv(manifest_df.at[wildcards.sample, 'FOFN'], header=None, names=['FILE'])
-	return expand('alignments/{aln_type}/{run}_{sample}_{aln_type}_alignment.bam', aln_type='minimap2', run=fofn_df.index, sample=wildcards.sample)
+	return expand(rules.merge_scatter_aln.output.scatter_merged_bam, aln_type='minimap2', run=fofn_df.index, sample=wildcards.sample)
 
 
 wildcard_constraints:
