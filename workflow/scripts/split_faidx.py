@@ -13,7 +13,7 @@ if __name__ == "__main__":
     with open(snakemake.input.fai, "r") as infile:
         fai_list = [line.split("\t")[0] for line in infile]
 
-    for j in len(fai_list):
+    for j in range(len(fai_list)):
         batch_dict[j % NIDS].append(fai_list[j])
 
     outs = [open(f, "w+") for f in snakemake.output.batches]
