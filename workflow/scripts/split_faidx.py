@@ -1,20 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Author: William T. Harvey
-import argparse
-import pysam
 import pandas as pd
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="", formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )
-    parser.add_argument("infile", help="input fai file")
-    parser.add_argument(
-        "--outputs", nargs="+", help="list of output files", required=True
-    )
-
-    args = parser.parse_args()
+if __name__ == "__main__":  
     NIDS = len(snakemake.output.batches)
 
     fai_df = pd.read_csv(
