@@ -1,9 +1,12 @@
 import os
 import sys
 import math
+import pandas as pd
 from snakemake.utils import min_version
 
+
 min_version("6.0")
+
 
 SDIR = os.path.realpath(os.path.dirname(srcdir("Snakefile")))
 shell.prefix(f"set -eo pipefail;")

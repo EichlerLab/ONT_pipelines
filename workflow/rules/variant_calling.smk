@@ -1,7 +1,3 @@
-import os
-import pandas as pd
-import numpy as np
-from pathlib import Path
 
 
 rule clair:
@@ -32,7 +28,7 @@ rule sniffles:
 		index = rules.index_aln.output.merged_bai,
 		ref = REF
 	output:
-		vcf = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.clair3.vcf'
+		vcf = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.sniffles.vcf'
 	envmodules:
 		'modules',
 		'modules-init',
@@ -55,7 +51,9 @@ rule cuteSV:
 		index = rules.index_aln.output.merged_bai,
 		ref = REF
 	output:
-		cuteSV_vcf = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.clair3.vcf'
+		cuteSV_vcf = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.cuteSV.vcf'
+	conda:
+		"envs/env.yaml"
 	envmodules:
 		'modules',
 		'modules-init',
@@ -98,7 +96,7 @@ rule bgzip_vcf:
 	input:
 		vcf = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.{var_caller}.vcf'
 	output:
-		zipped = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.{var_caller}.vcf'
+		zipped = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.{var_caller}.vcf.gz'
 	envmodules:
 		'modules',
 		'modules-init',

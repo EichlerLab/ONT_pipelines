@@ -1,5 +1,4 @@
-import pandas as pd
-import os
+
 
 SNAKEMAKE_DIR = os.path.dirname(workflow.snakefile)
 
@@ -41,10 +40,10 @@ def find_summary_fofn(wildcards):
 	else:
 		return ''
 
-rule all:
-	input: 
-		# expand('final/{sample}.share.tsv', sample=manifest_df.index), 
-		expand('calls/{sample}/{window}.hap.methyl.compiled.tsv', sample=manifest_df.index, window=WINDOWS)
+# rule all:
+# 	input: 
+# 		# expand('final/{sample}.share.tsv', sample=manifest_df.index), 
+# 		expand('calls/{sample}/{window}.hap.methyl.compiled.tsv', sample=manifest_df.index, window=WINDOWS)
 
 
 rule pre_process:
@@ -77,6 +76,12 @@ rule nanopolish:
 		methyl = 'calls/{sample}/{window}.methylation.tsv'
 	params:
 		sge_opts = '-l mfree=4G -pe serial 8',
+	envmodules:
+        'modules',
+        'modules-init',
+        'modules-gs/prod',
+        'modules-eichler/prod',
+		'nanopolish/0.13.2'
 	priority:20
 	shell:
 		'''
