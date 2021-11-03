@@ -10,7 +10,7 @@ if __name__ == "__main__":
         snakemake.input.fai,
         sep="\t",
         header=None,
-        names=["contig", "len", "byte_start", "byte", "offset"],
+        names=["contig", "len", "byte_start", "byte", "byte_len", "offset"]
     )
 
     fai_df["batch"] = fai_df.index % NIDS
