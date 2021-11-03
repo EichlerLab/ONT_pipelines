@@ -18,7 +18,7 @@ if __name__ == "__main__":
     NIDS = len(args.outputs)
 
     fai_df = pd.read_csv(
-        input.fai,
+        args.infile,
         sep="\t",
         header=None,
         names=["contig", "len", "byte_start", "byte", "offset"],
