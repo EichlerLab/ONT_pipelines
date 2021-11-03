@@ -9,3 +9,9 @@ A prefix for outputs.
 ```
 sample: a
 ```
+
+# Optional config arguments
+```yaml
+MANIFEST
+BASECALL_VERSION
+```

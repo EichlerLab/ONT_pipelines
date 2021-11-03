@@ -30,22 +30,18 @@ rule get_batch_ids:
 		fai = find_input_index
 	output:
 		batches = temp(scatter.split('tmp/splitBatchID/{{run}}_{{sample}}/{{run}}_{{sample}}_{scatteritem}.txt'))
-	params:
-		nbatches = NBATCHES
-	envmodules:
-		'modules',
-		'modules-init',
-		'modules-gs/prod',
-		'modules-eichler/prod'
 	resources:
 		mem=4,
 		hrs=5,
 		disk_free = 5
 	threads: 1 
-	shell:
-		"""
-		Rscript {SNAKEMAKE_DIR}/scripts/indexSplit.R {input.fai} {wildcards.run} {wildcards.sample} {params.nbatches}
-		"""
+	run:
+		fai_df = pd.read_csv(input.fai, sep='\t', header=None, names=['contig', 'len', 'byte_start', 'byte', 'offset'])
+		fai_df['batch'] = fai_df.index % NBATCHES
+		for i in range(1,NBATCHES+1):
+			with open(f'tmp/splitBatchID/{wildcards.run}_{wildcards.sample}/{wildcards.run}_{wildcards.sample}_{i}-of-{NBATCHES}.txt') as outfile:
+				outfile.write('\n'.join(fai_df.loc[fai_df['batch'] == i-1]['contig']))
+				outfile.write('\n')
 
 
 

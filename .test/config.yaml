@@ -1,1 +1,2 @@
-sample: "a"
+MANIFEST: .test/manifest.tab 
+REF: .test/data/ref.fa
