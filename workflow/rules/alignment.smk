@@ -18,13 +18,8 @@ rule get_batch_ids:
 		disk_free = 5
 	log: 'log/{run}_{sample}_batching.log'
 	threads: 1 
-	run:
-		fai_df = pd.read_csv(input.fai, sep='\t', header=None, names=['contig', 'len', 'byte_start', 'byte', 'offset'])
-		fai_df['batch'] = fai_df.index % NBATCHES
-		for i in range(1,NBATCHES+1):
-			with open(f'tmp/splitBatchID/{wildcards.run}_{wildcards.sample}/{wildcards.run}_{wildcards.sample}_{i}-of-{NBATCHES}.txt') as outfile:
-				outfile.write('\n'.join(fai_df.loc[fai_df['batch'] == i-1]['contig']))
-				outfile.write('\n')
+	script:
+		'scripts/split_faidx.py {input.fai} --output {output.batches}'
 
 
 
