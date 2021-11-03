@@ -13,7 +13,7 @@ if __name__ == "__main__":
         names=["contig", "len", "byte_start", "byte", "offset"],
     )
 
-    fai_df["batch"] = fai_df.index % NBATCHES
+    fai_df["batch"] = fai_df.index % NIDS
 
     outs = [open(f, "w+") for f in snakemake.output.batches]
 
