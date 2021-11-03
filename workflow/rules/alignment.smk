@@ -57,7 +57,7 @@ rule minimap_aln:
 		hrs=96,
 		disk_free = 5
 	conda:
-		"../envs/env.yaml"
+		"../envs/align.yaml"
 	envmodules:
 		'modules',
 		'modules-init',
@@ -82,7 +82,7 @@ rule merge_scatter_aln:
 		disk_free = 1
 	threads: 12
 	conda:
-		"../envs/env.yaml"
+		"../envs/align.yaml"
 	envmodules:
 		'modules',
 		'modules-init',
@@ -106,7 +106,7 @@ rule merge_run_aln:
 		disk_free = 1
 	threads: 12
 	conda:
-		"../envs/env.yaml"
+		"../envs/align.yaml"
 	envmodules:
 		'modules',
 		'modules-init',
@@ -130,7 +130,7 @@ rule index_aln:
 		disk_free = 1
 	threads: 1
 	conda:
-		"../envs/env.yaml"
+		"../envs/align.yaml"
 	envmodules:
 		'modules',
 		'modules-init',

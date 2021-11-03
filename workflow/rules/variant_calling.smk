@@ -13,7 +13,7 @@ rule clair:
 		'modules-gs/prod',
 		'modules-eichler/prod',
 	conda:
-		"../envs/env.yaml"
+		"../envs/clair3.yaml"
 	resources:
 		mem=10,
 		hrs=24
@@ -38,7 +38,7 @@ rule sniffles:
 		'modules-eichler/prod',
 		'sniffles/202109'
 	conda:
-		"../envs/env.yaml"
+		"../envs/sniffles.yaml"
 	resources:
 		mem=10,
 		hrs=24
@@ -57,7 +57,7 @@ rule cuteSV:
 	output:
 		cuteSV_vcf = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.cuteSV.vcf'
 	conda:
-		"../envs/env.yaml"
+		"../envs/cutesv.yaml"
 	envmodules:
 		'modules',
 		'modules-init',
@@ -87,7 +87,7 @@ rule svim:
 		'modules-eichler/prod',
 		'svim/1.4.2'
 	conda:
-		"../envs/env.yaml"
+		"../envs/svim.yaml"
 	resources:
 		mem=16,
 		hrs=24
@@ -110,7 +110,7 @@ rule bgzip_vcf:
 		'modules-eichler/prod',
 		'tabix/0.2.6'
 	conda:
-		"../envs/env.yaml"
+		"../envs/vcf.yaml"
 	resources:
 		mem=10,
 		hrs=24
