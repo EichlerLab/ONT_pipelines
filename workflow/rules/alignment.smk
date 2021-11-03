@@ -56,6 +56,8 @@ rule minimap_aln:
 		mem=4,
 		hrs=96,
 		disk_free = 5
+	conda:
+		"../envs/env.yaml"
 	envmodules:
 		'modules',
 		'modules-init',
@@ -71,14 +73,16 @@ rule minimap_aln:
 
 rule merge_scatter_aln:
 	input:
-		sorted_bams = gather.split('tmp/alignments/minimap2/{{run}}_{{sample}}_batches/{{run}}_{{sample}}_{scatteritem}_{{aln_type}}.sorted.bam')
+		sorted_bams = gather.split('tmp/alignments/minimap2/{{run}}_{{sample}}_batches/{{run}}_{{sample}}_{scatteritem}.sorted.bam')
 	output:
 		scatter_merged_bam = temp('tmp/alignments/minimap2/{run}_{sample}_minimap2_alignment.bam')
 	resources:
 		mem=4,
 		hrs=24,
 		disk_free = 1
-	threads: 12 
+	threads: 12
+	conda:
+		"../envs/env.yaml"
 	envmodules:
 		'modules',
 		'modules-init',
@@ -101,6 +105,8 @@ rule merge_run_aln:
 		hrs=24,
 		disk_free = 1
 	threads: 12
+	conda:
+		"../envs/env.yaml"
 	envmodules:
 		'modules',
 		'modules-init',
@@ -123,6 +129,8 @@ rule index_aln:
 		hrs=24,
 		disk_free = 1
 	threads: 1
+	conda:
+		"../envs/env.yaml"
 	envmodules:
 		'modules',
 		'modules-init',

@@ -1,0 +1,16 @@
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - snakemake
+  - snakefmt
+  - black
+  - snakedeploy
+  - samtools
+  - cutesv
+  - clair3
+  - sniffles
+  - tabix
+  - minimap2
+  - nanopolish

@@ -12,6 +12,8 @@ rule clair:
 		'modules-init',
 		'modules-gs/prod',
 		'modules-eichler/prod',
+	conda:
+		"../envs/env.yaml"
 	resources:
 		mem=10,
 		hrs=24
@@ -35,6 +37,8 @@ rule sniffles:
 		'modules-gs/prod',
 		'modules-eichler/prod',
 		'sniffles/202109'
+	conda:
+		"../envs/env.yaml"
 	resources:
 		mem=10,
 		hrs=24
@@ -53,7 +57,7 @@ rule cuteSV:
 	output:
 		cuteSV_vcf = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.cuteSV.vcf'
 	conda:
-		"envs/env.yaml"
+		"../envs/env.yaml"
 	envmodules:
 		'modules',
 		'modules-init',
@@ -66,7 +70,7 @@ rule cuteSV:
 	threads: 8
 	shell:
 		"""
-		cuteSV -t {threads} --genotype --max_cluster_bias_INS 100 --diff_ratio_merging_INS 0.3 --max_cluster_bias_DEL 100 --diff_ratio_merging_DEL 0.3 {input.merged_bam} {input.ref} {output.cuteSV_vcf} $( dirname {cuteSV_vcf} )
+		cuteSV -t {threads} --genotype --max_cluster_bias_INS 100 --diff_ratio_merging_INS 0.3 --max_cluster_bias_DEL 100 --diff_ratio_merging_DEL 0.3 {input.merged_bam} {input.ref} {output.cuteSV_vcf} $( dirname {output.cuteSV_vcf} )
 		"""
 
 rule svim:
@@ -82,13 +86,15 @@ rule svim:
 		'modules-gs/prod',
 		'modules-eichler/prod',
 		'svim/1.4.2'
+	conda:
+		"../envs/env.yaml"
 	resources:
 		mem=16,
 		hrs=24
 	threads: 1
 	shell:
 		"""
-		svim --sample {wildcard.sample} $( dirname {cuteSV_vcf} ) {input.merged_bam} {input.ref}
+		svim --sample {wildcards.sample} $( dirname {output.vcf} ) {input.merged_bam} {input.ref}
 		"""
 
 
@@ -103,6 +109,8 @@ rule bgzip_vcf:
 		'modules-gs/prod',
 		'modules-eichler/prod',
 		'tabix/0.2.6'
+	conda:
+		"../envs/env.yaml"
 	resources:
 		mem=10,
 		hrs=24
