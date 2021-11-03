@@ -24,7 +24,8 @@ if __name__ == "__main__":
     outs = [open(f, "w+") for f in args.outputs]
 
     for i in range(len(outs)):
-        outs[i].write('\n'join(fai_df.loc[fai_df['batch'] == i]['contig'])+'\n')
+        contig_str = 
+        outs[i].write('\n'.join(fai_df.loc[fai_df['batch'] == i]['contig'])+'\n')
 
     for out in outs:
         out.close()
