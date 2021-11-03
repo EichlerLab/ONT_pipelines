@@ -1,6 +1,5 @@
-.vscode/**
 .snakemake/**
-results/**
-logs/**
-.snakemake/**
-**.code-workspace
+Clair3/**
+alignments/**
+log/**
+tmp/**
