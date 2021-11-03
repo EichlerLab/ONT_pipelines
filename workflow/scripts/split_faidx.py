@@ -15,10 +15,10 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    NIDS = len(args.outputs)
+    NIDS = len(snakemake.output.batches)
 
     fai_df = pd.read_csv(
-        args.infile,
+        snakemake.input.fai,
         sep="\t",
         header=None,
         names=["contig", "len", "byte_start", "byte", "offset"],
@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     fai_df["batch"] = fai_df.index % NBATCHES
 
-    outs = [open(f, "w+") for f in args.outputs]
+    outs = [open(f, "w+") for f in snakemake.output.batches]
 
     for i in range(len(outs)):
         outs[i].write("\n".join(fai_df.loc[fai_df["batch"] == i]["contig"]) + "\n")
