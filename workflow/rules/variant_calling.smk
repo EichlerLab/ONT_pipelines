@@ -1,10 +1,28 @@
 
-
-rule clair:
+rule clair_chr:
 	input:
 		merged_bam = rules.merge_run_aln.output.merged_bam,
 		index = rules.index_aln.output.merged_bai,
 		ref = REF
+	output:
+		vcf = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.{chr}.clair3.vcf'
+	log: 'log/{sample}_{bc_vers}_{seq}_{chr}.clair.log'
+	conda:
+		'../envs/clair3.yaml'
+	threads: 8
+	resources:
+		mem=2,
+		hrs=24
+	shell:
+		'''
+		run_clair3.sh --bam_fn={input.merged_bam} --sample_name={wildcards.sample} --ref_fn={input.ref} --threads={threads} --platform=ont --model_path=$(dirname $( which run_clair3.sh  ) )/models/ont_guppy5 --output=$(dirname {output.vcf})
+		'''
+
+
+
+rule clair:
+	input:
+		vcf = find_clair_chrs
 	output:
 		vcf = temp('alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.clair3.vcf')
 	envmodules:
@@ -14,14 +32,14 @@ rule clair:
 		'modules-eichler/prod',
 	log: 'log/{sample}_{bc_vers}_{seq}.clair.log'
 	conda:
-		'../envs/clair3.yaml'
+		'../envs/vcf.yaml'
 	resources:
 		mem=10,
 		hrs=24
 	threads: 1 
 	shell:
 		'''
-		clair3.sh -s {wildcards.sample} -r {input.ref} -b {input.merged_bam} -o $( dirname {output.vcf} )
+		bcftools concat -O v -o {output.vcf} {input.vcf}
 		'''
 
 
@@ -98,7 +116,7 @@ rule svim:
 	threads: 1
 	shell:
 		'''
-		svim --sample {wildcards.sample} $( dirname {output.vcf} ) {input.merged_bam} {input.ref}
+		svim alignment --sample {wildcards.sample} $( dirname {output.vcf} ) {input.merged_bam} {input.ref}
 		'''
 
 

@@ -8,3 +8,4 @@ dependencies:
   - black
   - snakedeploy
   - tabix
+  - bcftools
