@@ -12,7 +12,7 @@ rule clair:
 		'modules-init',
 		'modules-gs/prod',
 		'modules-eichler/prod',
-	log: 'log/{sample}_{bcvers}_{seq}.clair.log'
+	log: 'log/{sample}_{bc_vers}_{seq}.clair.log'
 	conda:
 		'../envs/clair3.yaml'
 	resources:
@@ -32,7 +32,7 @@ rule sniffles:
 		ref = REF
 	output:
 		vcf = temp('alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.sniffles.vcf')
-	log: 'log/{sample}_{bcvers}_{seq}.sniffles.log'
+	log: 'log/{sample}_{bc_vers}_{seq}.sniffles.log'
 	envmodules:
 		'modules',
 		'modules-init',
@@ -60,7 +60,7 @@ rule cuteSV:
 		cuteSV_vcf = temp('alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.cuteSV.vcf')
 	conda:
 		'../envs/cutesv.yaml'
-	log: 'log/{sample}_{bcvers}_{seq}.cutesv.log'
+	log: 'log/{sample}_{bc_vers}_{seq}.cutesv.log'
 	envmodules:
 		'modules',
 		'modules-init',
@@ -89,7 +89,7 @@ rule svim:
 		'modules-gs/prod',
 		'modules-eichler/prod',
 		'svim/1.4.2'
-	log: 'log/{sample}_{bcvers}_{seq}.svim.log'
+	log: 'log/{sample}_{bc_vers}_{seq}.svim.log'
 	conda:
 		'../envs/svim.yaml'
 	resources:
@@ -107,7 +107,7 @@ rule bgzip_vcf:
 		vcf = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.{var_caller}.vcf'
 	output:
 		zipped = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.{var_caller}.vcf.gz'
-	log: 'log/{sample}_{bcvers}_{seq}.{var_caller}_zip.log'
+	log: 'log/{sample}_{bc_vers}_{seq}.{var_caller}_zip.log'
 	envmodules:
 		'modules',
 		'modules-init',
