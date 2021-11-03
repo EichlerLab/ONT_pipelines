@@ -21,7 +21,7 @@ rule get_batch_ids:
 		'../envs/align.yaml'	
 	threads: 1 
 	script:
-		'scripts/split_faidx.py'
+		'../scripts/split_faidx.py'
 
 
 
