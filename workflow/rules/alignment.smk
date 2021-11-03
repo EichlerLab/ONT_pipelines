@@ -17,6 +17,8 @@ rule get_batch_ids:
 		hrs=5,
 		disk_free = 5
 	log: 'log/{run}_{sample}_batching.log'
+	conda:
+		'../envs/align.yaml'	
 	threads: 1 
 	script:
 		'scripts/split_faidx.py {input.fai} --output {output.batches}'
