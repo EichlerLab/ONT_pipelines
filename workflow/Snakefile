@@ -20,9 +20,8 @@ configfile: "config/config.yaml"
 
 MANIFEST = config.get('MANIFEST', 'config/manifest.tab')
 BASECALL_VERSION = config.get('BASECALLER', 'guppy5012')
-REF = config.get('REF', '/net/eichler/vol26/eee_shared/assemblies/hg38/no_alt/hg38.no_alt.fa')
+REF = config.get('REF')
 NBATCHES = config.get('BATCHES', 100)
-CLAIR_DIR = config.get('clair_dir', '/net/eichler/vol26/7200/software/pipelines/clair3')
 
 
 manifest_df = pd.read_csv(MANIFEST, sep='\t', index_col='SAMPLE')
@@ -41,8 +40,10 @@ if TEMP_DIR != "temp":
         shell("ln -s {TEMP_DIR} temp")
 
 
-localrules: all, clair
+localrules: all
 
+
+include: 'rules/common.smk'
 
 rule all:
     input:

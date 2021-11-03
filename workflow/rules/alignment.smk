@@ -1,22 +1,4 @@
 
-
-
-def find_input_index(wildcards):
-	FOFN = manifest_df.at[wildcards.sample, 'FOFN']
-	fofn_df = pd.read_csv(FOFN, header=None, names=['FILE'], sep='\t')
-	return fofn_df.at[int(wildcards.run), 'FILE']+'.fai'
-
-
-def find_input_file(wildcards):
-	FOFN = manifest_df.at[wildcards.sample, 'FOFN']
-	fofn_df = pd.read_csv(FOFN, header=None, names=['FILE'], sep='\t')
-	return fofn_df.at[int(wildcards.run), 'FILE']
-
-def find_parts(wildcards):
-	fofn_df = pd.read_csv(manifest_df.at[wildcards.sample, 'FOFN'], header=None, names=['FILE'])
-	return expand(rules.merge_scatter_aln.output.scatter_merged_bam, aln_type='minimap2', run=fofn_df.index, sample=wildcards.sample)
-
-
 wildcard_constraints:
     sample='|'.join(manifest_df.index) 
 
@@ -34,6 +16,7 @@ rule get_batch_ids:
 		mem=4,
 		hrs=5,
 		disk_free = 5
+	log: 'log/{run}_{sample}_batching.log'
 	threads: 1 
 	run:
 		fai_df = pd.read_csv(input.fai, sep='\t', header=None, names=['contig', 'len', 'byte_start', 'byte', 'offset'])
@@ -56,8 +39,9 @@ rule minimap_aln:
 		mem=4,
 		hrs=96,
 		disk_free = 5
+	log: 'log/{run}_{sample}_{scatteritem}_aln.log'
 	conda:
-		"../envs/align.yaml"
+		'../envs/align.yaml'
 	envmodules:
 		'modules',
 		'modules-init',
@@ -66,10 +50,10 @@ rule minimap_aln:
 		'minimap2/2.21'
 	threads: 4 
 	shell:
-		"""
+		'''
 		samtools fqidx {input.fastq} -r {input.batch_file} > $TMPDIR/scatteritem.fastq
 		minimap2 -t {threads} --MD --secondary=no --eqx -x map-ont -a {input.ref} $TMPDIR/scatteritem.fastq | samtools view -S -b | samtools sort -T $TMPDIR > {output.sorted_bam}
-		"""
+		'''
 
 rule merge_scatter_aln:
 	input:
@@ -81,8 +65,9 @@ rule merge_scatter_aln:
 		hrs=24,
 		disk_free = 1
 	threads: 12
+	log: 'log/{run}_{sample}_merging.log'
 	conda:
-		"../envs/align.yaml"
+		'../envs/align.yaml'
 	envmodules:
 		'modules',
 		'modules-init',
@@ -90,9 +75,9 @@ rule merge_scatter_aln:
 		'modules-eichler/prod',
 		'samtools/1.12'
 	shell:
-		"""
+		'''
 		samtools merge -@{threads} {output.scatter_merged_bam} {input.sorted_bams}
-		"""
+		'''
 
 
 rule merge_run_aln:
@@ -105,8 +90,9 @@ rule merge_run_aln:
 		hrs=24,
 		disk_free = 1
 	threads: 12
+	log: 'log/{sample}_{bc_vers}.merge_all.log'
 	conda:
-		"../envs/align.yaml"
+		'../envs/align.yaml'
 	envmodules:
 		'modules',
 		'modules-init',
@@ -114,9 +100,9 @@ rule merge_run_aln:
 		'modules-eichler/prod',
 		'samtools/1.12'
 	shell:
-		"""
+		'''
 		samtools merge -@{threads} {output.merged_bam} {input.scatter_merged_bam}
-		"""
+		'''
 
 
 rule index_aln:
@@ -129,8 +115,9 @@ rule index_aln:
 		hrs=24,
 		disk_free = 1
 	threads: 1
+	log: 'log/{sample}_{bc_vers}.merge_all.log'	
 	conda:
-		"../envs/align.yaml"
+		'../envs/align.yaml'
 	envmodules:
 		'modules',
 		'modules-init',
@@ -138,7 +125,7 @@ rule index_aln:
 		'modules-eichler/prod',
 		'samtools/1.12'
 	shell:
-		"""
+		'''
 		samtools index {input.merged_bam}
-		"""
+		'''
 

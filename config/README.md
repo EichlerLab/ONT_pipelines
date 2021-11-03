@@ -14,4 +14,6 @@ sample: a
 ```yaml
 MANIFEST
 BASECALL_VERSION
+REF
+NBATCHES
 ```

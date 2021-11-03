@@ -6,22 +6,23 @@ rule clair:
 		index = rules.index_aln.output.merged_bai,
 		ref = REF
 	output:
-		vcf = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.clair3.vcf'
+		vcf = temp('alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.clair3.vcf')
 	envmodules:
 		'modules',
 		'modules-init',
 		'modules-gs/prod',
 		'modules-eichler/prod',
+	log: 'log/{sample}_{bcvers}_{seq}.clair.log'
 	conda:
-		"../envs/clair3.yaml"
+		'../envs/clair3.yaml'
 	resources:
 		mem=10,
 		hrs=24
 	threads: 1 
 	shell:
-		"""
-		{CLAIR_DIR}/clair3.sh -s {wildcards.sample} -r {input.ref} -b {input.merged_bam} -o $( dirname {output.vcf} )
-		"""
+		'''
+		clair3.sh -s {wildcards.sample} -r {input.ref} -b {input.merged_bam} -o $( dirname {output.vcf} )
+		'''
 
 
 rule sniffles:
@@ -30,7 +31,8 @@ rule sniffles:
 		index = rules.index_aln.output.merged_bai,
 		ref = REF
 	output:
-		vcf = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.sniffles.vcf'
+		vcf = temp('alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.sniffles.vcf')
+	log: 'log/{sample}_{bcvers}_{seq}.sniffles.log'
 	envmodules:
 		'modules',
 		'modules-init',
@@ -38,15 +40,15 @@ rule sniffles:
 		'modules-eichler/prod',
 		'sniffles/202109'
 	conda:
-		"../envs/sniffles.yaml"
+		'../envs/sniffles.yaml'
 	resources:
 		mem=10,
 		hrs=24
 	threads: 1 
 	shell:
-		"""
+		'''
 		sniffles -m {input.merged_bam} -v {output.vcf}
-		"""
+		'''
 
 
 rule cuteSV:
@@ -55,9 +57,10 @@ rule cuteSV:
 		index = rules.index_aln.output.merged_bai,
 		ref = REF
 	output:
-		cuteSV_vcf = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.cuteSV.vcf'
+		cuteSV_vcf = temp('alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.cuteSV.vcf')
 	conda:
-		"../envs/cutesv.yaml"
+		'../envs/cutesv.yaml'
+	log: 'log/{sample}_{bcvers}_{seq}.cutesv.log'
 	envmodules:
 		'modules',
 		'modules-init',
@@ -69,9 +72,9 @@ rule cuteSV:
 		hrs=24
 	threads: 8
 	shell:
-		"""
+		'''
 		cuteSV -t {threads} --genotype --max_cluster_bias_INS 100 --diff_ratio_merging_INS 0.3 --max_cluster_bias_DEL 100 --diff_ratio_merging_DEL 0.3 {input.merged_bam} {input.ref} {output.cuteSV_vcf} $( dirname {output.cuteSV_vcf} )
-		"""
+		'''
 
 rule svim:
 	input:
@@ -86,16 +89,17 @@ rule svim:
 		'modules-gs/prod',
 		'modules-eichler/prod',
 		'svim/1.4.2'
+	log: 'log/{sample}_{bcvers}_{seq}.svim.log'
 	conda:
-		"../envs/svim.yaml"
+		'../envs/svim.yaml'
 	resources:
 		mem=16,
 		hrs=24
 	threads: 1
 	shell:
-		"""
+		'''
 		svim --sample {wildcards.sample} $( dirname {output.vcf} ) {input.merged_bam} {input.ref}
-		"""
+		'''
 
 
 rule bgzip_vcf:
@@ -103,6 +107,7 @@ rule bgzip_vcf:
 		vcf = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.{var_caller}.vcf'
 	output:
 		zipped = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.{var_caller}.vcf.gz'
+	log: 'log/{sample}_{bcvers}_{seq}.{var_caller}_zip.log'
 	envmodules:
 		'modules',
 		'modules-init',
@@ -110,7 +115,7 @@ rule bgzip_vcf:
 		'modules-eichler/prod',
 		'tabix/0.2.6'
 	conda:
-		"../envs/vcf.yaml"
+		'../envs/vcf.yaml'
 	resources:
 		mem=10,
 		hrs=24
