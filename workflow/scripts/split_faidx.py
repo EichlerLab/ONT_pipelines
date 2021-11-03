@@ -17,16 +17,17 @@ if __name__ == "__main__":
     args = parser.parse_args()
     NIDS = len(args.outputs)
 
-    fai_df = pd.read_csv(input.fai, sep='\t', header=None, names=['contig', 'len', 'byte_start', 'byte', 'offset'])
+    fai_df = pd.read_csv(
+        input.fai,
+        sep="\t",
+        header=None,
+        names=["contig", "len", "byte_start", "byte", "offset"],
+    )
 
-    fai_df['batch'] = fai_df.index % NBATCHES
+    fai_df["batch"] = fai_df.index % NBATCHES
 
     outs = [open(f, "w+") for f in args.outputs]
 
     for i in range(len(outs)):
-        outs[i].write('\n'.join(fai_df.loc[fai_df['batch'] == i]['contig'])+'\n')
-
-    for out in outs:
-        out.close()
-
-
+        outs[i].write("\n".join(fai_df.loc[fai_df["batch"] == i]["contig"]) + "\n")
+        outs[i].close()
