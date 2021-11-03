@@ -7,10 +7,5 @@ dependencies:
   - snakefmt
   - black
   - snakedeploy
-  - samtools
-  - cutesv
-  - clair3
-  - sniffles
-  - tabix
   - minimap2
-  - nanopolish
+  - samtools
