@@ -12,7 +12,8 @@ rule clair_chr:
 	threads: 8
 	resources:
 		mem=2,
-		hrs=24
+		hrs=24,
+		disk_free=1
 	shell:
 		'''
 		run_clair3.sh --bam_fn={input.merged_bam} --sample_name={wildcards.sample} --ref_fn={input.ref} --threads={threads} --platform=ont --model_path=$(dirname $( which run_clair3.sh  ) )/models/ont_guppy5 --output=$(dirname {output.vcf}) --ctg_name={wildcards.chrom}
@@ -20,7 +21,7 @@ rule clair_chr:
 
 
 
-rule clair:
+rule concat_clair:
 	input:
 		vcf = find_clair_chrs
 	output:
@@ -35,7 +36,8 @@ rule clair:
 		'../envs/vcf.yaml'
 	resources:
 		mem=10,
-		hrs=24
+		hrs=24,
+		disk_free=1
 	threads: 1 
 	shell:
 		'''
@@ -61,7 +63,8 @@ rule sniffles:
 		'../envs/sniffles.yaml'
 	resources:
 		mem=10,
-		hrs=24
+		hrs=24,
+		disk_free=1
 	threads: 1 
 	shell:
 		'''
@@ -75,7 +78,8 @@ rule cuteSV:
 		index = rules.index_aln.output.merged_bai,
 		ref = REF
 	output:
-		cuteSV_vcf = temp('alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.cuteSV.vcf')
+		cuteSV_vcf = temp('alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.cuteSV.vcf'),
+		cuteSV_ref = temp('tmp/cuteSV/{sample}/{bc_vers}/{seq}/ref.out')
 	conda:
 		'../envs/cutesv.yaml'
 	log: 'log/{sample}_{bc_vers}_{seq}.cutesv.log'
@@ -87,11 +91,13 @@ rule cuteSV:
 		'cuteSV/1.0.11'
 	resources:
 		mem=10,
-		hrs=24
+		hrs=24,
+		disk_free=1
 	threads: 8
 	shell:
 		'''
-		cuteSV -t {threads} --genotype --max_cluster_bias_INS 100 --diff_ratio_merging_INS 0.3 --max_cluster_bias_DEL 100 --diff_ratio_merging_DEL 0.3 {input.merged_bam} {input.ref} {output.cuteSV_vcf} $( dirname {output.cuteSV_vcf} )
+		less {input.ref} > {output.cuteSV_ref}
+		cuteSV -t {threads} --genotype --max_cluster_bias_INS 100 --diff_ratio_merging_INS 0.3 --max_cluster_bias_DEL 100 --diff_ratio_merging_DEL 0.3 {input.merged_bam} {output.cuteSV_ref} {output.cuteSV_vcf} $( dirname {output.cuteSV_vcf} )
 		'''
 
 rule svim:
@@ -100,7 +106,8 @@ rule svim:
 		index = rules.index_aln.output.merged_bai,
 		ref = REF
 	output:
-		vcf = temp('alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.svim.vcf')
+		vcf_tmp = temp('tmp/alignments/{sample}/{bc_vers}/{seq}/variants.vcf'),
+		vcf = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.svim.vcf'
 	envmodules:
 		'modules',
 		'modules-init',
@@ -112,11 +119,13 @@ rule svim:
 		'../envs/svim.yaml'
 	resources:
 		mem=16,
-		hrs=24
+		hrs=24,
+		disk_free=1
 	threads: 1
 	shell:
 		'''
-		svim alignment --sample {wildcards.sample} $( dirname {output.vcf} ) {input.merged_bam} {input.ref}
+		svim alignment --sample {wildcards.sample} $( dirname {output.vcf_tmp} ) {input.merged_bam} {input.ref}
+		cp -l {output.vcf_tmp} {output.vcf}
 		'''
 
 
@@ -136,7 +145,8 @@ rule bgzip_vcf:
 		'../envs/vcf.yaml'
 	resources:
 		mem=10,
-		hrs=24
+		hrs=24,
+		disk_free=1
 	threads: 1
 	shell:
 		'''
