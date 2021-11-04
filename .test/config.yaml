@@ -1,2 +1,3 @@
 MANIFEST: .test/manifest.tab 
 REF: .test/data/GCF_000001735.4_TAIR10.1_genomic.fna.gz
+CHRS: ['NC_000932.1']
