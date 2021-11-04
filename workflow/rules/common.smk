@@ -14,6 +14,6 @@ def find_parts(wildcards):
 	return expand(rules.merge_scatter_aln.output.scatter_merged_bam, aln_type='minimap2', run=fofn_df.index, sample=wildcards.sample)
 
 def find_clair_chrs(wildcards):
-	with open(REF+'.fai', 'r') as infile:
+	with open(f'{REF}.fai', 'r') as infile:
 		chroms = [ line.split('\t')[0] for line in infile ]
 	return expand('alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.{chr}.clair3.vcf', sample='{sample}', bc_vers='{bc_vers}', seq='{seq}', chr=chroms)
