@@ -3,9 +3,5 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - snakemake
-  - snakefmt
-  - black
-  - snakedeploy
   - tabix
   - bcftools

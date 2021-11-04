@@ -3,10 +3,5 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - snakemake
-  - snakefmt
-  - black
-  - pandas
-  - snakedeploy
   - minimap2
   - samtools
