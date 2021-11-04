@@ -5,7 +5,7 @@ rule clair_chr:
 		index = rules.index_aln.output.merged_bai,
 		ref = REF
 	output:
-		vcf = 'alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.{chrom}.clair3.vcf'
+		vcf = 'tmp/alignments/{sample}/{chrom}/{bc_vers}/{seq}/merge_output.vcf.gz'
 	log: 'log/{sample}_{bc_vers}_{seq}_{chrom}.clair.log'
 	conda:
 		'../envs/clair3.yaml'

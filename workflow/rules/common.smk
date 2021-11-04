@@ -13,9 +13,9 @@ def find_parts(wildcards):
 	return expand(rules.merge_scatter_aln.output.scatter_merged_bam, aln_type='minimap2', run=fofn_df.index, sample=wildcards.sample)
 
 def find_clair_chrs(wildcards):
-	try:
-		chroms = config.get('CHRS')
-	except:
+	if config.get('CHRS') == None:
 		with open(f'{REF}.fai', 'r') as infile:
 			chroms = [ line.split('\t')[0] for line in infile ]
-		return expand('alignments/{{sample}}/{{sample}}.{{bc_vers}}.minimap2.{{seq}}.{chrom}.clair3.vcf', chrom=chroms)
+	else:
+		chroms = config.get('CHRS')
+	return expand('tmp/alignments/{{sample}}/{chrom}/{{bc_vers}}/{{seq}}/merge_output.vcf.gz', chrom=chroms)
