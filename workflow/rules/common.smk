@@ -16,4 +16,4 @@ def find_parts(wildcards):
 def find_clair_chrs(wildcards):
 	with open(f'{REF}.fai', 'r') as infile:
 		chroms = [ line.split('\t')[0] for line in infile ]
-	return expand('alignments/{{sample}}/{{sample}}.{{bc_vers}}.minimap2.{{seq}}.{chr}.clair3.vcf', chr=chroms)
+	return expand('alignments/{{sample}}/{{sample}}.{{bc_vers}}.minimap2.{{seq}}.{chrom}.clair3.vcf', chrom=chroms)

@@ -44,6 +44,14 @@ if TEMP_DIR != "temp":
 
 localrules: all
 
+wildcard_constraints:
+    sample='|'.join(manifest_df.index),
+    var_caller='|'.join(['sniffles', 'svim', 'cuteSV', 'clair3'])
+
+
+scattergather:
+    split=NBATCHES
+
 
 include: 'rules/common.smk'
 

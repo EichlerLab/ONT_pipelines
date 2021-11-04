@@ -1,11 +1,4 @@
 
-wildcard_constraints:
-    sample='|'.join(manifest_df.index) 
-
-
-scattergather:
-    split=NBATCHES
-
 		
 rule get_batch_ids:
 	input:
