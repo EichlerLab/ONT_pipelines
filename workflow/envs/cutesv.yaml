@@ -1,6 +1,8 @@
 channels:
   - bioconda
   - conda-forge
+  - dhirschfeld
   - defaults
 dependencies:
   - cutesv
+  - less

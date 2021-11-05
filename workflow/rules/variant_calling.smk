@@ -150,6 +150,6 @@ rule bgzip_vcf:
 	threads: 1
 	shell:
 		'''
-		bgzip -c {input.vcf} > {output.zipped}
+		bcftools sort -o /dev/stdout -O v {input.vcf} | bgzip -c > {output.zipped}
 		tabix {output.zipped}
 		'''	
