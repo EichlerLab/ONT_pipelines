@@ -6,6 +6,10 @@ rule concat_fastq:
     output:
         fastq=temp("tmp/reads/{sample}.{bc_vers}.{seq}.fastq.gz"),
     threads: 1
+    conda:
+        "../envs/nanopolish.yaml"
+    log:
+        "log/{sample}_{bc_vers}_{seq}.concat_fastq.log"
     resources:
         mem=8,
         hrs=12,
@@ -25,7 +29,9 @@ rule index_fastq:
         readdb=temp("tmp/reads/{sample}.{bc_vers}.{seq}.fastq.gz.index.readdb"),
     params:
         directory=find_fast5_dir,
-        summary=find_summary_fofn,
+        summary=find_summary_fofn
+    log:
+        "log/{sample}_{bc_vers}_{seq}.index_fastq.log"
     threads: 1
     conda:
         "../envs/nanopolish.yaml"
@@ -59,6 +65,8 @@ rule nanopolish:
     threads: 8
     conda:
         "../envs/nanopolish.yaml"
+    log:
+        "log/{sample}_{bc_vers}_{seq}.nanopolish.log"
     resources:
         mem=2,
         hrs=72,
@@ -77,6 +85,8 @@ rule nanopolish:
 rule gather_nanopolish:
     input:
         find_all_windows,
+    log:
+        "log/{sample}_{bc_vers}_{seq}.nanopolish.log"
     output:
         touch(".{sample}.{bc_vers}.{seq}_nanopolish.done"),
 
