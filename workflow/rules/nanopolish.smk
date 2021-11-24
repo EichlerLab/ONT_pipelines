@@ -66,7 +66,7 @@ rule nanopolish:
     conda:
         "../envs/nanopolish.yaml"
     log:
-        "log/{sample}_{bc_vers}_{seq}.nanopolish.log"
+        "log/{sample}_{bc_vers}_{seq}_{window}.nanopolish.log"
     resources:
         mem=2,
         hrs=72,
