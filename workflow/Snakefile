@@ -9,9 +9,7 @@ min_version("6.0")
 
 
 SDIR = os.path.realpath(os.path.dirname(srcdir("Snakefile")))
-shell.prefix(
-    f"set -eo pipefail; export PATH={SDIR}/../Clair3:$PATH; "
-)
+shell.prefix(f"set -eo pipefail; export PATH={SDIR}/../Clair3:$PATH; ")
 
 
 report: "report/workflow.rst"
@@ -20,13 +18,13 @@ report: "report/workflow.rst"
 configfile: "config/config.yaml"
 
 
-MANIFEST = config.get('MANIFEST', 'config/manifest.tab')
-BASECALL_VERSION = config.get('BASECALLER', 'guppy5012')
-REF = config.get('REF')
-NBATCHES = config.get('BATCHES', 5)
+MANIFEST = config.get("MANIFEST", "config/manifest.tab")
+BASECALL_VERSION = config.get("BASECALLER", "guppy5012")
+REF = config.get("REF")
+NBATCHES = config.get("BATCHES", 5)
 
 
-manifest_df = pd.read_csv(MANIFEST, sep='\t', index_col='SAMPLE')
+manifest_df = pd.read_csv(MANIFEST, sep="\t", index_col="SAMPLE", dtype=str)
 
 
 TEMP_DIR = config.pop("tempdir", "temp")
@@ -42,23 +40,41 @@ if TEMP_DIR != "temp":
         shell("ln -s {TEMP_DIR} temp")
 
 
-localrules: all
+localrules:
+    all,
+    gather_nanopolish,
+
 
 wildcard_constraints:
-    sample='|'.join(manifest_df.index),
-    var_caller='|'.join(['sniffles', 'svim', 'cuteSV', 'clair3']),
-    seq='wgs|tlrs'
+    sample="|".join(manifest_df.index),
+    var_caller="|".join(["sniffles", "svim", "cuteSV", "clair3"]),
+    seq="wgs|tlrs",
 
 
 scattergather:
-    split=NBATCHES
+    split=NBATCHES,
 
 
-include: 'rules/common.smk'
+include: "rules/common.smk"
+
 
 rule all:
     input:
-        expand('alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.{var_caller}.vcf.gz', sample=manifest_df.index, bc_vers=BASECALL_VERSION, seq='wgs', var_caller=['sniffles', 'svim', 'cuteSV', 'clair3']),
+        expand(
+            "alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.{var_caller}.vcf.gz",
+            sample=manifest_df.index,
+            bc_vers=BASECALL_VERSION,
+            seq="wgs",
+            var_caller=["sniffles", "svim", "cuteSV", "clair3"],
+        ),
+        expand(
+            ".{sample}.{bc_vers}.{seq}_nanopolish.done",
+            sample=manifest_df.index,
+            bc_vers=BASECALL_VERSION,
+            seq="wgs",
+        ),
 
-include: 'rules/alignment.smk'
-include: 'rules/variant_calling.smk'
+
+include: "rules/alignment.smk"
+include: "rules/variant_calling.smk"
+include: "rules/nanopolish.smk"
