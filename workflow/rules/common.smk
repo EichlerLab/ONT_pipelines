@@ -1,7 +1,8 @@
 def find_input_index(wildcards):
     FOFN = manifest_df.at[wildcards.sample, "FOFN"]
     fofn_df = pd.read_csv(FOFN, header=None, names=["FILE"], sep="\t")
-    return f"{fofn_df.at[int(wildcards.run), "FILE"]}.fai"
+    file = fofn_df.at[int(wildcards.run), "FILE"]
+    return f"{file}.fai"
 
 
 def find_input_file(wildcards):
