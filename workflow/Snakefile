@@ -78,12 +78,12 @@ rule all:
 rule all_align:
     input:
         expand(
-            rules.merge_run_aln.output.merged_bam,
+            "alignments/{sample}/{sample}.{bc_vers}.minimap2.bam",
             sample=manifest_df.index,
             bc_vers=BASECALL_VERSION,
         ),
         expand(
-            rules.index_aln.output.merged_bai,
+            "alignments/{sample}/{sample}.{bc_vers}.minimap2.bam.bai",
             sample=manifest_df.index,
             bc_vers=BASECALL_VERSION,
         ),
