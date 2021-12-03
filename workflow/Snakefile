@@ -68,7 +68,42 @@ rule all:
             var_caller=["sniffles", "svim", "cuteSV", "clair3"],
         ),
         expand(
-            ".{sample}.{bc_vers}.{seq}_nanopolish.done",
+            "alignments/{sample}/{sample}.{bc_vers}.nanopolish.{seq}.tsv",
+            sample=manifest_df.index,
+            bc_vers=BASECALL_VERSION,
+            seq="wgs",
+        ),
+
+
+rule all_align:
+    input:
+        expand(
+            rules.merge_run_aln.output.merged_bam,
+            sample=manifest_df.index,
+            bc_vers=BASECALL_VERSION,
+        ),
+        expand(
+            rules.index_aln.output.merged_bai,
+            sample=manifest_df.index,
+            bc_vers=BASECALL_VERSION,
+        ),
+
+
+rule all_sv:
+    input:
+        expand(
+            "alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.{var_caller}.vcf.gz",
+            sample=manifest_df.index,
+            bc_vers=BASECALL_VERSION,
+            seq="wgs",
+            var_caller=["sniffles", "svim", "cuteSV"],
+        ),
+
+
+rule all_methylation:
+    input:
+        expand(
+            "alignments/{sample}/{sample}.{bc_vers}.nanopolish.{seq}.tsv",
             sample=manifest_df.index,
             bc_vers=BASECALL_VERSION,
             seq="wgs",

@@ -9,7 +9,7 @@ rule concat_fastq:
     conda:
         "../envs/nanopolish.yaml"
     log:
-        "log/{sample}_{bc_vers}_{seq}.concat_fastq.log"
+        "log/{sample}_{bc_vers}_{seq}.concat_fastq.log",
     resources:
         mem=8,
         hrs=12,
@@ -29,9 +29,9 @@ rule index_fastq:
         readdb=temp("tmp/reads/{sample}.{bc_vers}.{seq}.fastq.gz.index.readdb"),
     params:
         directory=find_fast5_dir,
-        summary=find_summary_fofn
+        summary=find_summary_fofn,
     log:
-        "log/{sample}_{bc_vers}_{seq}.index_fastq.log"
+        "log/{sample}_{bc_vers}_{seq}.index_fastq.log",
     threads: 1
     conda:
         "../envs/nanopolish.yaml"
@@ -61,12 +61,12 @@ rule nanopolish:
         gzi=rules.index_fastq.output.gzi,
         readdb=rules.index_fastq.output.readdb,
     output:
-        methyl="calls/{sample}/{window}.{bc_vers}.nanopolish.{seq}.tsv",
+        methyl=temp("tmp/{sample}/{window}.{bc_vers}.nanopolish.{seq}.tsv"),
     threads: 8
     conda:
         "../envs/nanopolish.yaml"
     log:
-        "log/{sample}_{bc_vers}_{seq}_{window}.nanopolish.log"
+        "log/{sample}_{bc_vers}_{seq}_{window}.nanopolish.log",
     resources:
         mem=2,
         hrs=72,
@@ -84,11 +84,19 @@ rule nanopolish:
 
 rule gather_nanopolish:
     input:
-        find_all_windows,
+        tsv=find_all_windows,
     log:
-        "log/{sample}_{bc_vers}_{seq}.nanopolish.log"
+        "log/{sample}_{bc_vers}_{seq}.nanopolish.log",
     output:
-        touch(".{sample}.{bc_vers}.{seq}_nanopolish.done"),
+        tsv_all="alignments/{sample}/{sample}.{bc_vers}.nanopolish.{seq}.tsv",
+    resources:
+        mem=2,
+        hrs=72,
+    threads: 1
+    run:
+        df = pd.concat([pd.read_csv(file, sep="\t") for file in input.tsv])
+        df = df.sort_values(["chromosome", "start"])
+        df.to_csv(output.tsv_all, sep="\t", index=False)
 
 
 # rule merge:
@@ -237,7 +245,6 @@ rule gather_nanopolish:
 # 		call_df = pd.read_csv(input.callset, header=0, sep="\t")
 
 # 		call_df["haplotype"] = "NA"
-
 # 		hap_one_df = call_df[call_df["read_name"].isin(h_one)]
 # 		hap_one_df["haplotype"] = "H1"
 # 		hap_two_df = call_df[call_df["read_name"].isin(h_two)]
