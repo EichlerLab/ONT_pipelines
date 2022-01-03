@@ -43,6 +43,9 @@ if TEMP_DIR != "temp":
 localrules:
     all,
     gather_nanopolish,
+    all_methylation,
+    all_sv,
+    all_align
 
 
 wildcard_constraints:
@@ -109,6 +112,15 @@ rule all_methylation:
             seq="wgs",
         ),
 
+
+rule all_methylation_h5:
+    input:
+        expand(
+            "alignments/{sample}/{sample}.{bc_vers}.nanopolish.{seq}.h5",
+            sample=manifest_df.index,
+            bc_vers=BASECALL_VERSION,
+            seq="wgs",
+        ),
 
 include: "rules/alignment.smk"
 include: "rules/variant_calling.smk"
