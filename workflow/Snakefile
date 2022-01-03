@@ -116,7 +116,7 @@ rule all_methylation:
 rule all_methylation_h5:
     input:
         expand(
-            "alignments/{sample}/{sample}.{bc_vers}.nanopolish.{seq}.h5",
+            "alignments/{sample}/{sample}.{bc_vers}.nanopolish.{seq}.m5",
             sample=manifest_df.index,
             bc_vers=BASECALL_VERSION,
             seq="wgs",

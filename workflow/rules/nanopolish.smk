@@ -105,7 +105,7 @@ rule h5_nanopolish:
     log:
         "log/{sample}_{bc_vers}_{seq}.nanopolish_h5.log",
     output:
-        h5="alignments/{sample}/{sample}.{bc_vers}.nanopolish.{seq}.h5",
+        h5="alignments/{sample}/{sample}.{bc_vers}.nanopolish.{seq}.m5",
     resources:
         mem=2,
         hrs=72,
