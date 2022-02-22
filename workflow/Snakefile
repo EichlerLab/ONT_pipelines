@@ -21,7 +21,7 @@ configfile: "config/config.yaml"
 MANIFEST = config.get("MANIFEST", "config/manifest.tab")
 BASECALL_VERSION = config.get("BASECALLER", "guppy5012")
 REF = config.get("REF")
-NBATCHES = config.get("BATCHES", 5)
+NBATCHES = config.get("BATCHES", 25)
 
 
 manifest_df = pd.read_csv(MANIFEST, sep="\t", index_col="SAMPLE", dtype=str)

@@ -95,7 +95,6 @@ rule gather_nanopolish:
     threads: 1
     run:
         df = pd.concat([pd.read_csv(file, sep="\t") for file in input.tsv])
-        df = df.sort_values(["chromosome", "start"])
         df.to_csv(output.tsv_all, sep="\t", index=False)
 
 
