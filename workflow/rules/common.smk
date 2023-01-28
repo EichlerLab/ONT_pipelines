@@ -30,7 +30,7 @@ def find_clair_chrs(wildcards):
     else:
         chroms = config.get("CHRS")
     return expand(
-        "tmp/alignments/{{sample}}/{chrom}/{{bc_vers}}/{{seq}}/merge_output.vcf.gz",
+        "tmp/alignments/{{sample}}/{chrom}/merge_output.vcf.gz",
         chrom=chroms,
     )
 
@@ -41,50 +41,4 @@ def concatenate_fastq(wildcards):
     return fofn_df["FILE"]
 
 
-def find_fast5_dir(wildcards):
-    df = pd.read_csv(
-        manifest_df.at[wildcards.sample, "FAST5_FOFN"],
-        sep="\t",
-        header=None,
-        names=["files"],
-    )
-    return "-d " + " -d ".join(df["files"])
 
-
-def find_summary_fofn(wildcards):
-    if os.path.isfile(manifest_df.at[wildcards.sample, "SUMMARY"]):
-        return "-f " + manifest_df.at[wildcards.sample, "SUMMARY"]
-    else:
-        return ""
-
-
-def find_all_windows(wildcards):
-    if config.get("METHYL_WINDOW_FILE") != None:
-        with open(config.get("WINDOW_FILE"), "r") as infile:
-            windows = [x.rstrip() for x in infile]
-        return expand(
-            rules.nanopolish.output.methyl,
-            window=windows,
-            sample=wildcards.sample,
-            bc_vers=wildcards.bc_vers,
-            seq=wildcards.seq,
-        )
-    elif config.get("METHYL_CLAIR_CHRS") != None:
-        windows = config.get("CHRS")
-        return expand(
-            rules.nanopolish.output.methyl,
-            window=windows,
-            sample=wildcards.sample,
-            bc_vers=wildcards.bc_vers,
-            seq=wildcards.seq,
-        )
-    else:
-        with open(f"{REF}.fai", "r") as infile:
-            windows = [x.split("\t")[0] for x in infile]
-        return expand(
-            rules.nanopolish.output.methyl,
-            window=windows,
-            sample=wildcards.sample,
-            bc_vers=wildcards.bc_vers,
-            seq=wildcards.seq,
-        )

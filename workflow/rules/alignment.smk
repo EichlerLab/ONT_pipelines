@@ -87,14 +87,14 @@ rule merge_run_aln:
     input:
         scatter_merged_bam=find_parts,
     output:
-        merged_bam="alignments/{sample}/{sample}.{bc_vers}.minimap2.bam",
+        merged_bam="alignments/{sample}/{sample}.minimap2.bam",
     resources:
         mem=4,
         hrs=24,
         disk_free=1,
     threads: 12
     log:
-        "log/{sample}_{bc_vers}.merge_all.log",
+        "log/{sample}.merge_all.log",
     conda:
         "../envs/align.yaml"
     envmodules:
@@ -113,7 +113,7 @@ rule index_aln:
     input:
         merged_bam=rules.merge_run_aln.output.merged_bam,
     output:
-        merged_bai="alignments/{sample}/{sample}.{bc_vers}.minimap2.bam.bai",
+        merged_bai="alignments/{sample}/{sample}.minimap2.bam.bai",
     resources:
         mem=4,
         hrs=24,

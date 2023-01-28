@@ -5,9 +5,9 @@ rule clair_chr:
         index=rules.index_aln.output.merged_bai,
         ref=REF,
     output:
-        vcf="tmp/alignments/{sample}/{chrom}/{bc_vers}/{seq}/merge_output.vcf.gz",
+        vcf="tmp/variants/{sample}/{chrom}/merge_output.vcf.gz",
     log:
-        "log/{sample}_{bc_vers}_{seq}_{chrom}.clair.log",
+        "log/{sample}_{chrom}.clair.log",
     conda:
         "../envs/clair3.yaml"
     threads: 8
@@ -25,14 +25,14 @@ rule concat_clair:
     input:
         vcf=find_clair_chrs,
     output:
-        vcf=temp("alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.clair3.vcf"),
+        vcf=temp("variants/{sample}/{sample}.clair3.vcf"),
     envmodules:
         "modules",
         "modules-init",
         "modules-gs/prod",
         "modules-eichler/prod",
     log:
-        "log/{sample}_{bc_vers}_{seq}.clair.log",
+        "log/{sample}.clair.log",
     conda:
         "../envs/vcf.yaml"
     resources:
@@ -52,9 +52,9 @@ rule sniffles:
         index=rules.index_aln.output.merged_bai,
         ref=REF,
     output:
-        vcf=temp("alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.sniffles.vcf"),
+        vcf=temp("variants/{sample}/{sample}.sniffles.vcf"),
     log:
-        "log/{sample}_{bc_vers}_{seq}.sniffles.log",
+        "log/{sample}.sniffles.log",
     envmodules:
         "modules",
         "modules-init",
@@ -81,13 +81,13 @@ rule cuteSV:
         ref=REF,
     output:
         cuteSV_vcf=temp(
-            "alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.cuteSV.vcf"
+            "variants/{sample}/{sample}.cuteSV.vcf"
         ),
-        cuteSV_ref=temp("tmp/cuteSV/{sample}/{bc_vers}/{seq}/ref.out"),
+        cuteSV_ref=temp("tmp/cuteSV/{sample}/ref.out"),
     conda:
         "../envs/cutesv.yaml"
     log:
-        "log/{sample}_{bc_vers}_{seq}.cutesv.log",
+        "log/{sample}.cutesv.log",
     envmodules:
         "modules",
         "modules-init",
@@ -112,8 +112,8 @@ rule svim:
         index=rules.index_aln.output.merged_bai,
         ref=REF,
     output:
-        vcf_tmp=temp("tmp/alignments/{sample}/{bc_vers}/{seq}/variants.vcf"),
-        vcf="alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.svim.vcf",
+        vcf_tmp=temp("tmp/variants/{sample}/variants.vcf"),
+        vcf="variants/{sample}/{sample}.svim.vcf",
     envmodules:
         "modules",
         "modules-init",
@@ -121,7 +121,7 @@ rule svim:
         "modules-eichler/prod",
         "svim/1.4.2",
     log:
-        "log/{sample}_{bc_vers}_{seq}.svim.log",
+        "log/{sample}.svim.log",
     conda:
         "../envs/svim.yaml"
     resources:
@@ -138,13 +138,13 @@ rule svim:
 
 rule bgzip_vcf:
     input:
-        vcf="alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.{var_caller}.vcf",
+        vcf="variants/{sample}/{sample}.{var_caller}.vcf",
     output:
         zipped=(
-            "alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.{var_caller}.vcf.gz"
+            "variants/{sample}/{sample}.{var_caller}.vcf.gz"
         ),
     log:
-        "log/{sample}_{bc_vers}_{seq}.{var_caller}_zip.log",
+        "log/{sample}.{var_caller}_zip.log",
     envmodules:
         "modules",
         "modules-init",

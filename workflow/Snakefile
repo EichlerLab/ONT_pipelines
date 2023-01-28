@@ -42,8 +42,6 @@ if TEMP_DIR != "temp":
 
 localrules:
     all,
-    gather_nanopolish,
-    all_methylation,
     all_sv,
     all_align
 
@@ -51,7 +49,6 @@ localrules:
 wildcard_constraints:
     sample="|".join(manifest_df.index),
     var_caller="|".join(["sniffles", "svim", "cuteSV", "clair3"]),
-    seq="wgs|tlrs",
 
 
 scattergather:
@@ -64,63 +61,42 @@ include: "rules/common.smk"
 rule all:
     input:
         expand(
-            "alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.{var_caller}.vcf.gz",
+            "alignments/{sample}/{sample}.{var_caller}.vcf.gz",
             sample=manifest_df.index,
-            bc_vers=BASECALL_VERSION,
-            seq="wgs",
             var_caller=["sniffles", "svim", "cuteSV", "clair3"],
-        ),
-        expand(
-            "alignments/{sample}/{sample}.{bc_vers}.nanopolish.{seq}.tsv",
-            sample=manifest_df.index,
-            bc_vers=BASECALL_VERSION,
-            seq="wgs",
-        ),
+        )
 
 
 rule all_align:
     input:
         expand(
-            "alignments/{sample}/{sample}.{bc_vers}.minimap2.bam",
+            "alignments/{sample}/{sample}.minimap2.bam",
             sample=manifest_df.index,
-            bc_vers=BASECALL_VERSION,
         ),
         expand(
-            "alignments/{sample}/{sample}.{bc_vers}.minimap2.bam.bai",
+            "alignments/{sample}/{sample}.minimap2.bam.bai",
             sample=manifest_df.index,
-            bc_vers=BASECALL_VERSION,
         ),
 
 
 rule all_sv:
     input:
         expand(
-            "alignments/{sample}/{sample}.{bc_vers}.minimap2.{seq}.{var_caller}.vcf.gz",
+            "alignments/{sample}/{sample}.{var_caller}.vcf.gz",
             sample=manifest_df.index,
-            bc_vers=BASECALL_VERSION,
-            seq="wgs",
             var_caller=["sniffles", "svim", "cuteSV"],
         ),
 
 
-rule all_methylation:
+rule all_snv:
     input:
         expand(
-            "alignments/{sample}/{sample}.{bc_vers}.nanopolish.{seq}.tsv",
+            "alignments/{sample}/{sample}.{var_caller}.vcf.gz",
             sample=manifest_df.index,
-            bc_vers=BASECALL_VERSION,
-            seq="wgs",
-        ),
+            var_caller="clair3",
+        )
 
 
-rule all_methylation_h5:
-    input:
-        expand(
-            "alignments/{sample}/{sample}.{bc_vers}.nanopolish.{seq}.m5",
-            sample=manifest_df.index,
-            bc_vers=BASECALL_VERSION,
-            seq="wgs",
-        ),
 
 include: "rules/alignment.smk"
 include: "rules/variant_calling.smk"
