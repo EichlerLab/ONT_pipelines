@@ -12,7 +12,7 @@ rule link_bam:
     conda:
         "../envs/methylink.yaml"
     log:
-        "log/{sample}.methlylink.log",
+        "log/{sample}.{phase}.methlylink.log",
     script:
         """
         scripts/append_mod_tags.py
