@@ -1,7 +1,7 @@
 rule link_bam:
     input:
         bam=find_aln_bam,
-        methyl_bam=find_methyl_list,
+        methyl_bam=find_aln_list,
     output:
         linked_bam="methyl_aln/{sample}/{sample}.{phase}.methyl.bam",
     resources:
@@ -9,10 +9,10 @@ rule link_bam:
         hrs=24,
         disk_free=1,
     threads: 12
+    conda:
+        "../envs/methylink.yaml"
     log:
         "log/{sample}.methlylink.log",
-    conda:
-        "../envs/align.yaml"
     script:
         """
         scripts/append_mod_tags.py
