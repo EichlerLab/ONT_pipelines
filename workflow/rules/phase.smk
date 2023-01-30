@@ -11,15 +11,11 @@ rule long_phase:
         hrs=24,
         disk_free=1,
     threads: 12
+    params:
+        script_dir="{SDIR}/scripts"
     log:
         "log/{sample}.merge_all.log",
-    envmodules:
-        "modules",
-        "modules-init",
-        "modules-gs/prod",
-        "modules-eichler/prod",
-        "samtools/1.12",
     shell:
         """
-        {SDIR}/scripts/longphase haplotag —snp-file={input.snv_vcf} —bam-file={input.bam} —qualityThreshold=1 -t {threads} —sv-file={input.sv_vcf} -o {output.bam}
+        {params.script_dir}/longphase haplotag —snp-file={input.snv_vcf} —bam-file={input.bam} —qualityThreshold=1 -t {threads} —sv-file={input.sv_vcf} -o {output.bam}
         """
