@@ -3,7 +3,6 @@ import sys
 import math
 import pandas as pd
 from snakemake.utils import min_version
-import pysam
 
 
 min_version("6.0")
