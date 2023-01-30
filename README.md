@@ -32,14 +32,14 @@ The functions performed by this tool are as follows:
 There are dummy rules which can be added to the snakemake command which run specific tests. They are listed below:
 
  - all_align
-  - Runs minimap2 for all samples
+   - Runs minimap2 for all samples
  - all_sv
-  - Runs all SV callers for all samples
+   - Runs all SV callers for all samples
  - all_snv
-  - Runs Clair3 for all samples
+   - Runs Clair3 for all samples
  - all_haplotag
-  - Runs haplotype phasing using longphase for all samples
+   - Runs haplotype phasing using longphase for all samples
  - all_haplotag_methyl
-  - Haplotags bams and links methylation bams for all samples
+   - Haplotags bams and links methylation bams for all samples
  - all_minimap_methyl
-  - Links methylation to unphased bams for all samples
+   - Links methylation to unphased bams for all samples
