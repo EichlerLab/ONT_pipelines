@@ -120,7 +120,7 @@ rule index_aln:
         disk_free=1,
     threads: 1
     log:
-        "log/{sample}_{bc_vers}.merge_all.log",
+        "log/{sample}.merge_all.log",
     conda:
         "../envs/align.yaml"
     envmodules:

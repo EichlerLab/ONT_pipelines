@@ -80,9 +80,7 @@ rule cuteSV:
         index=rules.index_aln.output.merged_bai,
         ref=REF,
     output:
-        cuteSV_vcf=temp(
-            "variants/{sample}/{sample}.cuteSV.vcf"
-        ),
+        cuteSV_vcf=temp("variants/{sample}/{sample}.cuteSV.vcf"),
         cuteSV_ref=temp("tmp/cuteSV/{sample}/ref.out"),
     conda:
         "../envs/cutesv.yaml"
@@ -140,9 +138,7 @@ rule bgzip_vcf:
     input:
         vcf="variants/{sample}/{sample}.{var_caller}.vcf",
     output:
-        zipped=(
-            "variants/{sample}/{sample}.{var_caller}.vcf.gz"
-        ),
+        zipped=("variants/{sample}/{sample}.{var_caller}.vcf.gz"),
     log:
         "log/{sample}.{var_caller}_zip.log",
     envmodules:

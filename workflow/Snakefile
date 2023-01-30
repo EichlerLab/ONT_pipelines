@@ -3,6 +3,7 @@ import sys
 import math
 import pandas as pd
 from snakemake.utils import min_version
+import pysam
 
 
 min_version("6.0")
@@ -43,7 +44,9 @@ if TEMP_DIR != "temp":
 localrules:
     all,
     all_sv,
-    all_align
+    all_align,
+    all_minimap_methyl,
+    all_haplotag_methyl,
 
 
 wildcard_constraints:
@@ -64,7 +67,12 @@ rule all:
             "alignments/{sample}/{sample}.{var_caller}.vcf.gz",
             sample=manifest_df.index,
             var_caller=["sniffles", "svim", "cuteSV", "clair3"],
-        )
+        ),
+        expand(
+            "methyl_aln/{sample}/{sample}.{phase}.methyl.bam",
+            sample=manifest_df.index,
+            phase="longphase",
+        ),
 
 
 rule all_align:
@@ -94,10 +102,36 @@ rule all_snv:
             "alignments/{sample}/{sample}.{var_caller}.vcf.gz",
             sample=manifest_df.index,
             var_caller="clair3",
-        )
+        ),
 
+
+rule all_haplotag_methyl:
+    input:
+        expand(
+            "methyl_aln/{sample}/{sample}.{phase}.methyl.bam",
+            sample=manifest_df.index,
+            phase="longphase",
+        ),
+
+
+rule all_minimap_methyl:
+    input:
+        expand(
+            "methyl_aln/{sample}/{sample}.{phase}.methyl.bam",
+            sample=manifest_df.index,
+            phase="minimap2",
+        ),
+
+
+rule all_haplotag:
+    input:
+        expand(
+            "phased_aln/{sample}/{sample}.minimap2.longphase.bam",
+            sample=manifest_df.index,
+        ),
 
 
 include: "rules/alignment.smk"
 include: "rules/variant_calling.smk"
-include: "rules/nanopolish.smk"
+include: "rules/phase.smk"
+include: "rules/methylink.smk"

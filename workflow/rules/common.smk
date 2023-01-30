@@ -41,4 +41,17 @@ def concatenate_fastq(wildcards):
     return fofn_df["FILE"]
 
 
+def find_aln_bam(wildcards):
+    if wildcards.phase == "longphase":
+        return rules.long_phase.output.bam
+    elif wildcards.phase == "minimap2":
+        return rules.merge_run_aln.output.bam
+    else:
+        print("phase state must be either minimap2 (unphased) or longphase (phased)")
+        exit(1)
 
+
+def find_aln_list(wildcards):
+    FOFN = manifest_df.at[wildcards.sample, "METHYL_FOFN"]
+    with open(FOFN, "r") as infile:
+        return "\n".join([line.rstrip() for line in infile])
