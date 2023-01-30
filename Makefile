@@ -12,6 +12,10 @@ Clair3/run_clair3.sh:
 		&& git checkout v0.1-r7 \
 		&& cd ..
 
+workflow/scripts/longphase:
+	wget https://github.com/twolinin/longphase/releases/download/v1.4/longphase_linux-x64.tar.xz \
+		&& tar -xJf longphase_linux-x64.tar.xz \
+		&& mv longphase_linux-x64 workflow/scripts/longphase
 
 .PHONY: clean
 
