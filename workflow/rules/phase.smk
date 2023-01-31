@@ -12,9 +12,11 @@ rule long_phase:
         disk_free=1,
     threads: 12
     params:
-        script_dir="{SDIR}/scripts"
+        script_dir="{SDIR}/scripts",
     log:
         "log/{sample}.merge_all.log",
+    conda:
+        "../envs/clair3.yaml"
     shell:
         """
         {params.script_dir}/longphase haplotag —snp-file={input.snv_vcf} —bam-file={input.bam} —qualityThreshold=1 -t {threads} —sv-file={input.sv_vcf} -o {output.bam}
