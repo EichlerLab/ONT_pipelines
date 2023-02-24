@@ -19,7 +19,6 @@ configfile: "config/config.yaml"
 
 
 MANIFEST = config.get("MANIFEST", "config/manifest.tab")
-BASECALL_VERSION = config.get("BASECALLER", "guppy5012")
 REF = config.get("REF")
 NBATCHES = config.get("BATCHES", 25)
 
@@ -63,7 +62,7 @@ include: "rules/common.smk"
 rule all:
     input:
         expand(
-            "alignments/{sample}/{sample}.{var_caller}.vcf.gz",
+            "variants/{sample}/{sample}.{var_caller}.vcf.gz",
             sample=manifest_df.index,
             var_caller=["sniffles", "svim", "cuteSV", "clair3"],
         ),
@@ -89,7 +88,7 @@ rule all_align:
 rule all_sv:
     input:
         expand(
-            "alignments/{sample}/{sample}.{var_caller}.vcf.gz",
+            "variants/{sample}/{sample}.{var_caller}.vcf.gz",
             sample=manifest_df.index,
             var_caller=["sniffles", "svim", "cuteSV"],
         ),
@@ -98,7 +97,7 @@ rule all_sv:
 rule all_snv:
     input:
         expand(
-            "alignments/{sample}/{sample}.{var_caller}.vcf.gz",
+            "variants/{sample}/{sample}.{var_caller}.vcf.gz",
             sample=manifest_df.index,
             var_caller="clair3",
         ),
