@@ -70,7 +70,7 @@ rule sniffles:
     threads: 1
     shell:
         """
-        sniffles -m {input.merged_bam} -v {output.vcf}
+        sniffles -i {input.merged_bam} -v {output.vcf}
         """
 
 
