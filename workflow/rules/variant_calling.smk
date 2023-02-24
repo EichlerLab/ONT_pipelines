@@ -99,7 +99,7 @@ rule cuteSV:
     threads: 8
     shell:
         """
-        zcat {input.ref} > {output.cuteSV_ref} || ln -s $( readlink -f {input.ref} ) {output.cuteSV_ref}
+        zcat {input.ref} > {output.cuteSV_ref} || cat {input.ref} > {output.cuteSV_ref}
         cuteSV -t {threads} --genotype --max_cluster_bias_INS 100 --diff_ratio_merging_INS 0.3 --max_cluster_bias_DEL 100 --diff_ratio_merging_DEL 0.3 {input.merged_bam} {output.cuteSV_ref} {output.cuteSV_vcf} $( dirname {output.cuteSV_vcf} )
         """
 
