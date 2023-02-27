@@ -1,9 +1,9 @@
 rule long_phase:
     input:
-        snv_vcf="alignments/{sample}/{sample}.clair3.vcf.gz",
+        snv_vcf="variants/{sample}/{sample}.clair3.vcf.gz",
         bam=rules.merge_run_aln.output.merged_bam,
         bai=rules.index_aln.output.merged_bai,
-        sv_vcf="alignments/{sample}/{sample}.sniffles.vcf.gz",
+        sv_vcf="variants/{sample}/{sample}.sniffles.vcf.gz",
     output:
         bam="phased_aln/{sample}/{sample}.minimap2.longphase.bam",
     resources:
