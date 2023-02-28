@@ -9,7 +9,7 @@ min_version("6.0")
 
 
 SDIR = os.path.realpath(os.path.dirname(srcdir("Snakefile")))
-shell.prefix(f"set -eo pipefail; export PATH={SDIR}/../Clair3:$PATH; ")
+shell.prefix(f"set -eo pipefail; export PATH=$PATH:{SDIR}/../Clair3; ")
 
 
 report: "report/workflow.rst"
