@@ -19,5 +19,5 @@ rule long_phase:
         "../envs/clair3.yaml"
     shell:
         """
-        {params.script_dir}/longphase haplotag --snp-file={input.snv_vcf} --bam-file={input.bam} --qualityThreshold=1 -t {threads} --sv-file={input.sv_vcf} -o {output.bam}
+        {params.script_dir}/longphase haplotag --snp-file={input.snv_vcf} --bam-file={input.bam} --qualityThreshold=1 -t {threads} --sv-file={input.sv_vcf} -o $( echo {output.bam} | sed 's/.bam//' )
         """
