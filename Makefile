@@ -1,4 +1,4 @@
-Clair3/models/ont_guppy5/pileup.index: Clair3/run_clair3.sh workflow/scripts/longphas
+Clair3/models/ont_guppy5/pileup.index: Clair3/run_clair3.sh workflow/scripts/longphase
 	cd Clair3 \
 		&& mkdir models \
 		&& wget http://www.bio8.cs.hku.hk/clair3/clair3_models/clair3_models.tar.gz \
