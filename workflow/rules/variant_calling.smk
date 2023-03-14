@@ -5,7 +5,7 @@ rule clair_chr:
         index=rules.index_aln.output.merged_bai,
         ref=REF,
     output:
-        vcf="tmp/variants/{sample}/{chrom}/merge_output.vcf.gz",
+        vcf="tmp/variants/{sample}/{chrom}/phased_merge_output.vcf.gz",
     log:
         "log/{sample}_{chrom}.clair.log",
     conda:

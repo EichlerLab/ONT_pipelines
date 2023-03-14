@@ -30,7 +30,7 @@ def find_clair_chrs(wildcards):
     else:
         chroms = config.get("CHRS")
     return expand(
-        "tmp/variants/{{sample}}/{chrom}/merge_output.vcf.gz",
+        "tmp/variants/{{sample}}/{chrom}/phased_merge_output.vcf.gz",
         chrom=chroms,
     )
 
