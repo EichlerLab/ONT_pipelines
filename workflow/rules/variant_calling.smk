@@ -20,9 +20,7 @@ rule clair_chr:
         run_clair3.sh --bam_fn={input.merged_bam} --sample_name={wildcards.sample} --ref_fn={input.ref} --threads={threads} --platform=ont --model_path=$(dirname $( which run_clair3.sh  ) )/models/ont_guppy5 --output=$(dirname {output.vcf}) --ctg_name={wildcards.chrom} --enable_phasing
         if [[ ( -f $( echo {output.vcf} | sed 's/phased_//' ) ) && ( ! -f {output.vcf} ) ]]; then
             cp $( echo {output.vcf} | sed 's/phased_//' ) {output.vcf}
-        elif [[ ( -f $( echo {output.vcf} | sed 's/phased_//' ) ) && ( -f {output.vcf} ) ]]; then
-            pass
-        else
+        elif [[ ( ! -f $( echo {output.vcf} | sed 's/phased_//' ) ) && ( ! -f {output.vcf} ) ]]; then
             zcat $(dirname {output.vcf})/pileup.vcf.gz | grep ^# | bgzip -c > {output.vcf}
         fi
         """
