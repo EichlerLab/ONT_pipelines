@@ -23,7 +23,7 @@ rule clair_chr:
         elif [[ ( -f $( echo {output.vcf} | sed 's/phased_//' ) ) && ( -f {output.vcf} ) ]]; then
             pass
         else
-            zcat $(dirname {output.vcf})/pileup.vcf.gz | grep ^# | bgzip -c | {output.vcf}
+            zcat $(dirname {output.vcf})/pileup.vcf.gz | grep ^# | bgzip -c > {output.vcf}
         fi
         """
 
