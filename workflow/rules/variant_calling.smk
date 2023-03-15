@@ -17,7 +17,12 @@ rule clair_chr:
         disk_free=1,
     shell:
         """
-        run_clair3.sh --bam_fn={input.merged_bam} --sample_name={wildcards.sample} --ref_fn={input.ref} --threads={threads} --platform=ont --model_path=$(dirname $( which run_clair3.sh  ) )/models/ont_guppy5 --output=$(dirname {output.vcf}) --ctg_name={wildcards.chrom} --enable_phasing || cp $( echo {output.vcf} | sed 's/phased_//' ) {output.vcf}
+        run_clair3.sh --bam_fn={input.merged_bam} --sample_name={wildcards.sample} --ref_fn={input.ref} --threads={threads} --platform=ont --model_path=$(dirname $( which run_clair3.sh  ) )/models/ont_guppy5 --output=$(dirname {output.vcf}) --ctg_name={wildcards.chrom} --enable_phasing
+        if [[ ( -f $( echo {output.vcf} | sed 's/phased_//' ) ) && ( ! -f {output.vcf} ) ]]; then
+            cp $( echo {output.vcf} | sed 's/phased_//' ) {output.vcf}
+        else 
+            touch {output.vcf}
+        fi
         """
 
 
