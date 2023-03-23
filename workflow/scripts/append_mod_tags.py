@@ -17,7 +17,7 @@ def fetch_modified_bases(modified_obj) -> dict:
     """
     tags_dict = {}
     for read in modified_obj.fetch(until_eof=True):
-        if read.has_tag("Mm"):
+        if read.has_tag("Mm") or read.has_tag("MM"):
             tags = read.get_tags()
             qname = read.query_name
             tags_dict[qname] = tags
