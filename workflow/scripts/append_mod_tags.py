@@ -4,6 +4,7 @@
 # Author: Mei Wu, github.com/projectoriented
 ###
 
+
 # LOGGING
 sys.stdout = open(snakemake.log[0], "w")
 
@@ -60,11 +61,10 @@ def collect_tags(methyl_sn_input: list) -> dict:
             dict_of_tags_per_bam = fetch_modified_bases(methyl_bam)
             tags.update(dict_of_tags_per_bam)
     else:
-        methyl_bam = pysam.AlignmentFile(methyl_sn_input, "rb", check_sq=False)
+        methyl_bam = pysam.AlignmentFile(methyl_sn_input[0], "rb", check_sq=False)
         dict_of_tags_per_bam = fetch_modified_bases(methyl_bam)
         tags.update(dict_of_tags_per_bam)
     return tags
-
 
 aln_bam = pysam.AlignmentFile(snakemake.input.aln_bam, "rb")
 tags_dict = collect_tags(snakemake.input.methyl_bam)
