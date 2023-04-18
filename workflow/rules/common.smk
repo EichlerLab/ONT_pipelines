@@ -45,7 +45,7 @@ def find_aln_bam(wildcards):
     if wildcards.phase == "longphase":
         return rules.long_phase.output.bam
     elif wildcards.phase == "minimap2":
-        return rules.merge_run_aln.output.bam
+        return rules.merge_run_aln.output.merged_bam
     else:
         print("phase state must be either minimap2 (unphased) or longphase (phased)")
         exit(1)

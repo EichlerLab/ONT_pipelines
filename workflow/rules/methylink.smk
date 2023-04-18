@@ -14,6 +14,4 @@ rule link_bam:
     log:
         "log/{sample}.{phase}.methlylink.log",
     script:
-        """
-        scripts/append_mod_tags.py
-        """
+        "../scripts/append_mod_tags.py"
