@@ -12,7 +12,7 @@ sys.stdout = open(snakemake.log[0], "w")
 
 def fetch_modified_bases(modified_obj) -> dict:
     """
-    Fetch base modification tags Mm & Ml
+    Fetch base modification tags Mm & Ml or MM & ML
     :param modified_obj: An unsorted bam pysam object with just methylation calls
     :return: A dictionary of tags where keys = query name and value = list of optional tags
     """
