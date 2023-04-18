@@ -54,4 +54,4 @@ def find_aln_bam(wildcards):
 def find_aln_list(wildcards):
     FOFN = manifest_df.at[wildcards.sample, "METHYL_FOFN"]
     with open(FOFN, "r") as infile:
-        return "\n".join([line.rstrip() for line in infile])
+        return [line.rstrip() for line in infile]
