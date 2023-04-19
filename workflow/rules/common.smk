@@ -55,3 +55,13 @@ def find_aln_list(wildcards):
     FOFN = manifest_df.at[wildcards.sample, "METHYL_FOFN"]
     with open(FOFN, "r") as infile:
         return [line.rstrip() for line in infile]
+
+
+def find_aln_bai(wildcards):
+    if wildcards.phase == "longphase":
+        return rules.index_phase.output.merged_bai
+    elif wildcards.phase == "minimap2":
+        return rules.index_aln.output.merged_bai
+    else:
+        print("phase state must be either minimap2 (unphased) or longphase (phased)")
+        exit(1)

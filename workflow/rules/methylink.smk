@@ -1,7 +1,7 @@
 rule link_bam:
     input:
         aln_bam=find_aln_bam,
-        aln_bai=find_aln_bam+".bai",
+        aln_bai=find_aln_bai,
         methyl_bam=find_aln_list,
     output:
         linked_bam="methyl_aln/{sample}/{sample}.{phase}.methyl.bam",

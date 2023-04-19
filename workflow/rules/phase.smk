@@ -21,3 +21,29 @@ rule long_phase:
         """
         {params.script_dir}/longphase haplotag --snp-file={input.snv_vcf} --bam-file={input.bam} --qualityThreshold=1 -t {threads} --sv-file={input.sv_vcf} -o $( echo {output.bam} | sed 's/.bam//' )
         """
+
+
+rule index_phase:
+    input:
+        merged_bam=rules.long_phase.output.bam,
+    output:
+        merged_bai="phased_aln/{sample}/{sample}.minimap2.longphase.bam.bai",
+    resources:
+        mem=4,
+        hrs=24,
+        disk_free=1,
+    threads: 1
+    log:
+        "log/{sample}.merge_all.log",
+    conda:
+        "../envs/align.yaml"
+    envmodules:
+        "modules",
+        "modules-init",
+        "modules-gs/prod",
+        "modules-eichler/prod",
+        "samtools/1.12",
+    shell:
+        """
+        samtools index {input.merged_bam}
+        """
