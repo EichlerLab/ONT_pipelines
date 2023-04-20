@@ -25,7 +25,7 @@ def create_database(db_name):
 
     conn = sqlite3.connect(db_name)
     c = conn.cursor()
-    c.execute('CREATE TABLE meth_tags (qname TEXT PRIMARY KEY, tag BLOB)')
+    c.execute("CREATE TABLE meth_tags (qname TEXT PRIMARY KEY, tag BLOB)")
 
     # commit changes and close connection
     conn.commit()
@@ -57,7 +57,10 @@ def fetch_modified_bases(modified_obj, db_name) -> None:
 
             # serialize the tags list
             serialized_list = pickle.dumps(tags)
-            c.execute("INSERT INTO meth_tags VALUES (?, ?)", (str(qname), sqlite3.Binary(serialized_list)))
+            c.execute(
+                "INSERT INTO meth_tags VALUES (?, ?)",
+                (str(qname), sqlite3.Binary(serialized_list)),
+            )
 
     modified_obj.close()
 
@@ -65,7 +68,9 @@ def fetch_modified_bases(modified_obj, db_name) -> None:
     conn.commit()
     conn.close()
 
-    print(f"Base modification tags fetched for {modified_obj.filename.decode()}. {get_time()}")
+    print(
+        f"Base modification tags fetched for {modified_obj.filename.decode()}. {get_time()}"
+    )
 
 
 def write_linked_tags(bam, db_name, out_file) -> None:
@@ -83,7 +88,9 @@ def write_linked_tags(bam, db_name, out_file) -> None:
 
     appended_tags = pysam.AlignmentFile(out_file, "wb", template=bam)
     for read in bam.fetch(until_eof=True):
-        result = c.execute("SELECT tag FROM meth_tags WHERE qname = ?", (str(read.qname),)).fetchone()
+        result = c.execute(
+            "SELECT tag FROM meth_tags WHERE qname = ?", (str(read.qname),)
+        ).fetchone()
         if result:
             deserialized_tag = pickle.loads(result[0])
             read.set_tags(read.get_tags() + deserialized_tag)
@@ -128,10 +135,8 @@ def make_subset_bams(input_bam, prefix) -> list[str]:
     bam_file_list = []
 
     for read in input_bam:
-
         # If the current subset is None or its size has exceeded the subset size, create a new subset
         if current_subset is None or subset_size_bytes >= subset_size:
-
             # If this is not the first subset, close the previous subset file
             if current_subset is not None:
                 current_subset.close()
@@ -139,7 +144,9 @@ def make_subset_bams(input_bam, prefix) -> list[str]:
 
             # Create a new subset file with a name based on the subset index
             subset_idx += 1
-            current_subset = pysam.AlignmentFile(f"{prefix}_tmp.{subset_idx}.bam", "wb", template=input_bam)
+            current_subset = pysam.AlignmentFile(
+                f"{prefix}_tmp.{subset_idx}.bam", "wb", template=input_bam
+            )
             bam_file_list.append(f"{prefix}_tmp.{subset_idx}.bam")
 
         # Write the current read to the current subset file
@@ -181,7 +188,7 @@ def run_pool(bam_file: str, db_name, output_file) -> None:
     clean_up_temps([bam_file])
 
 
-def clean_up_temps(files: list, suffix='.bai'):
+def clean_up_temps(files: list, suffix=".bai"):
     for f in files:
         index = f + suffix
         try:
@@ -202,7 +209,7 @@ def main():
     prefix = os.path.join(snakemake.resources.tmpdir, snakemake.wildcards.sample)
     final_output = snakemake.output.linked_bam
 
-    db_name = f'{prefix}-meth_tags.db'
+    db_name = f"{prefix}-meth_tags.db"
     create_database(db_name=db_name)
 
     # Populate the database with methylation tags
@@ -210,10 +217,15 @@ def main():
 
     # Make the chunks
     chunked_bams_names = make_subset_bams(input_bam=bam, prefix=prefix)
-    link_bam_output_names = [x.replace('_tmp.', '_tmp-linked.') for x in chunked_bams_names]
+    link_bam_output_names = [
+        x.replace("_tmp.", "_tmp-linked.") for x in chunked_bams_names
+    ]
 
     with Pool(threads) as p:
-        p.starmap(run_pool, zip(chunked_bams_names, itertools.repeat(db_name), link_bam_output_names))
+        p.starmap(
+            run_pool,
+            zip(chunked_bams_names, itertools.repeat(db_name), link_bam_output_names),
+        )
         p.close()
         p.join()
 
@@ -224,5 +236,5 @@ def main():
     clean_up_temps([db_name])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())
