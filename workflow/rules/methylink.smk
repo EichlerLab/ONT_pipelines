@@ -8,8 +8,8 @@ rule link_bam:
     resources:
         mem=4,
         hrs=24,
-        disk_free=1,
-    threads: 12
+        disk_free=250,
+    threads: 16
     conda:
         "../envs/methylink.yaml"
     log:
