@@ -205,12 +205,12 @@ def main():
     db_name = f'{prefix}-meth_tags.db'
     create_database(db_name=db_name)
 
-    # Get the meth dictionary
+    # Populate the database with methylation tags
     collect_tags(methyl_collection, db_name=db_name)
 
     # Make the chunks
     chunked_bams_names = make_subset_bams(input_bam=bam, prefix=prefix)
-    link_bam_output_names = [x.replace('tmp', 'tmp-linked') for x in chunked_bams_names]
+    link_bam_output_names = [x.replace('_tmp.', '_tmp-linked.') for x in chunked_bams_names]
 
     with Pool(threads) as p:
         p.starmap(run_pool, zip(chunked_bams_names, itertools.repeat(db_name), link_bam_output_names))
