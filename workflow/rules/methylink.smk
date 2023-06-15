@@ -10,9 +10,22 @@ rule link_bam:
         hrs=24,
         disk_free=250,
     threads: 16
+    envmodules:
+        "modules",
+        "modules-init",
+        "modules-gs/prod",
+        "modules-eichler/prod",
+        "methylink/0.4.0",
     conda:
         "../envs/methylink.yaml"
     log:
         "log/{sample}.{phase}.methlylink.log",
-    script:
-        "../scripts/append_mod_tags.py"
+    shell:
+        """
+        methylink \
+            --threads {threads} \
+            --aln {input.aln_bam} \
+            --sample {wildcards.sample}_{wildcards.phase} \
+            --methyl_bams "$(echo {input.methyl_bam})" \
+            --output {output.linked_bam} 2>&1 | tee {log}
+        """

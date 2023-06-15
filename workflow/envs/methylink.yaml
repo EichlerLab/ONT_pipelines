@@ -4,3 +4,5 @@ channels:
   - defaults
 dependencies:
   - pysam
+  - pip:
+      - methylink==0.4.0

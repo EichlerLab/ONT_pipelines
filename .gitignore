@@ -4,3 +4,6 @@ alignments/**
 log/**
 tmp/**
 **.code-workspace
+
+# pycharm auxiliary files
+.idea
