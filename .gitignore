@@ -4,3 +4,5 @@ alignments/**
 log/**
 tmp/**
 **.code-workspace
+Clair3
+workflow/scripts/longphase
