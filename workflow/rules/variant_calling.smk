@@ -65,7 +65,7 @@ rule sniffles:
         "modules-init",
         "modules-gs/prod",
         "modules-eichler/prod",
-        "sniffles/202109",
+        "sniffles/2.2",
     conda:
         "../envs/sniffles.yaml"
     resources:
@@ -75,7 +75,7 @@ rule sniffles:
     threads: 1
     shell:
         """
-        sniffles -i {input.merged_bam} --output-rnames -v {output.vcf}
+        sniffles -i {input.merged_bam} --reference {input.ref} --output-rnames -v {output.vcf}
         """
 
 
@@ -122,7 +122,7 @@ rule svim:
         "modules-init",
         "modules-gs/prod",
         "modules-eichler/prod",
-        "svim/1.4.2",
+        "svim/2.0.0",
     log:
         "log/{sample}.svim.log",
     conda:

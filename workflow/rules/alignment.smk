@@ -32,7 +32,7 @@ rule minimap_aln:
             "tmp/alignments/minimap2/{run}_{sample}_batches/{run}_{sample}_{scatteritem}.sorted.bam"
         ),
     resources:
-        mem=4,
+        mem=lambda wildcards, attempt: attempt * 4,
         hrs=96,
         disk_free=5,
     log:

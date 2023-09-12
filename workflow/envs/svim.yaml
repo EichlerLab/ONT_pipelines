@@ -3,4 +3,4 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - svim
+  - svim>=2.0.0
