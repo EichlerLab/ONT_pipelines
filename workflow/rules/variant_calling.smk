@@ -13,7 +13,7 @@ rule clair_chr:
         "../envs/clair3.yaml"
     threads: 1
     resources: 
-        mem=lambda wildcards, input, attempt: max(input.size//1e9//8, 16),
+        mem=lambda wildcards, input, attempt: max(input.size//1e9//4, 16),
         hrs=24,
         disk_free=1,
     shell:
