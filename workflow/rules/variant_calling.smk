@@ -11,9 +11,9 @@ rule clair_chr:
         "log/{sample}_{chrom}.clair.log",
     conda:
         "../envs/clair3.yaml"
-    threads: 8
-    resources:
-        mem=32,
+    threads: 1
+    resources: 
+        mem=lambda wildcards, input, attempt: max(input.size//1e9//8, 16),
         hrs=24,
         disk_free=1,
     shell:
