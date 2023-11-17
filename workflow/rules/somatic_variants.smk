@@ -84,7 +84,7 @@ rule sniffles_somatic:
     threads: 1
     shell:
         """
-        sniffles --somatic -i {input.merged_bam} --reference {input.ref} --output-rnames -v {output.vcf}
+        sniffles --mosaic -i {input.merged_bam} --reference {input.ref} --output-rnames -v {output.vcf}
         """
 
 
