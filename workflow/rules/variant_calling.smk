@@ -6,22 +6,28 @@ rule clair_chr:
         ref=REF,
     output:
         vcf="tmp/variants/{sample}/{chrom}/phased_merge_output.vcf.gz",
+        gvcf="tmp/variants/{sample}/{chrom}/merge_output.gvcf.gz",
     log:
         "log/{sample}_{chrom}.clair.log",
     conda:
         "../envs/clair3.yaml"
     threads: 8
     resources:
-        mem=2,
+        mem=32,
         hrs=24,
         disk_free=1,
     shell:
         """
-        run_clair3.sh --bam_fn={input.merged_bam} --sample_name={wildcards.sample} --ref_fn={input.ref} --threads={threads} --platform=ont --model_path=$(dirname $( which run_clair3.sh  ) )/models/ont_guppy5 --output=$(dirname {output.vcf}) --ctg_name={wildcards.chrom} --enable_phasing
+        run_clair3.sh --bam_fn={input.merged_bam} --sample_name={wildcards.sample} --ref_fn={input.ref} --threads={threads} --platform=ont --model_path=$(dirname $( which run_clair3.sh  ) )/models/ont_guppy5 --output=$(dirname {output.vcf}) --ctg_name={wildcards.chrom} --enable_phasing --gvcf
         if [[ ( -f $( echo {output.vcf} | sed 's/phased_//' ) ) && ( ! -f {output.vcf} ) ]]; then
             cp $( echo {output.vcf} | sed 's/phased_//' ) {output.vcf}
         elif [[ ( ! -f $( echo {output.vcf} | sed 's/phased_//' ) ) && ( ! -f {output.vcf} ) ]]; then
             zcat $(dirname {output.vcf})/pileup.vcf.gz | grep ^# | bgzip -c > {output.vcf}
+        fi
+        if [[ ( -f $( echo {output.vcf} | sed 's/phased_//' ) ) && ( ! -f {output.gvcf} ) ]]; then
+            cp $( echo {output.vcf} | sed 's/phased_//' ) {output.gvcf}
+        elif [[ ( ! -f $( echo {output.vcf} | sed 's/phased_//' ) ) && ( ! -f {output.gvcf} ) ]]; then
+            zcat $(dirname {output.vcf})/pileup.vcf.gz | grep ^# | bgzip -c > {output.gvcf}
         fi
         """
 
@@ -29,8 +35,10 @@ rule clair_chr:
 rule concat_clair:
     input:
         vcf=find_clair_chrs,
+        gvcf=find_clair_gvcf,
     output:
         vcf=temp("variants/{sample}/{sample}.clair3.vcf"),
+        gvcf="variants/{sample}/{sample}.clair3.gvcf.gz",
     envmodules:
         "modules",
         "modules-init",
@@ -48,6 +56,7 @@ rule concat_clair:
     shell:
         """
         bcftools concat -O v -o {output.vcf} {input.vcf}
+        bcftools concat -O v {input.gvcf} | bcftools sort -O v | bgzip -c > {output.gvcf} 
         """
 
 
@@ -69,7 +78,7 @@ rule sniffles:
     conda:
         "../envs/sniffles.yaml"
     resources:
-        mem=10,
+        mem=24,
         hrs=24,
         disk_free=1,
     threads: 1
