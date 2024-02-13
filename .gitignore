@@ -4,6 +4,6 @@ alignments/**
 log/**
 tmp/**
 **.code-workspace
-
-# pycharm auxiliary files
 .idea
+Clair3
+workflow/scripts/longphase

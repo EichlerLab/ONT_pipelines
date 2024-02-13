@@ -49,7 +49,7 @@ localrules:
 
 wildcard_constraints:
     sample="|".join(manifest_df.index),
-    var_caller="|".join(["sniffles", "svim", "cuteSV", "clair3"]),
+    var_caller="|".join(["sniffles", "svim", "cuteSV", "clair3", "sniffles-somatic"]),
 
 
 scattergather:
@@ -94,6 +94,14 @@ rule all_sv:
         ),
 
 
+rule all_somatic:
+    input:
+        expand(
+            "variants/{sample}/{sample}.{var_caller}.vcf.gz",
+            sample=manifest_df.index,
+            var_caller=["sniffles-somatic"],
+        ),
+
 rule all_snv:
     input:
         expand(
@@ -130,6 +138,7 @@ rule all_haplotag:
 
 
 include: "rules/alignment.smk"
+include: "rules/somatic_variants.smk"
 include: "rules/variant_calling.smk"
 include: "rules/phase.smk"
 include: "rules/methylink.smk"

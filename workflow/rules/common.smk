@@ -34,6 +34,17 @@ def find_clair_chrs(wildcards):
         chrom=chroms,
     )
 
+def find_clair_gvcf(wildcards):
+    if config.get("CHRS") == None:
+        with open(f"{REF}.fai", "r") as infile:
+            chroms = [line.split("\t")[0] for line in infile]
+    else:
+        chroms = config.get("CHRS")
+    return expand(
+        "tmp/variants/{{sample}}/{chrom}/merge_output.gvcf.gz",
+        chrom=chroms,
+    )
+
 
 def concatenate_fastq(wildcards):
     FOFN = manifest_df.at[wildcards.sample, "FOFN"]
